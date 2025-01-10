@@ -4,7 +4,7 @@ import { useState } from "react";
 export default function Description() {
     const [more,setMore] = useState(false);
   return (
-    <div className={more?"p-2 bg-gray-300 mx-1 rounded-md":"p-2 rounded-md mx-1 bg-gray-300 flex items-center justify-center"}>
+    <div className={more?"p-2 bg-gray-300 dark:bg-gray-900 mx-1 rounded-md":"p-2 rounded-md mx-1 bg-gray-300 flex items-center justify-center dark:bg-gray-900"}>
       <p className={more?"":"truncate"}>
         Lorem ipsum dolor sit, amet consectetur adipisicing elit. Assumenda
         distinctio consequatur rerum iste id dignissimos dolore alias itaque
