@@ -1,4 +1,4 @@
-import image from "@/app/assets/logo.png";
+import image from "@/assets/logo.png";
 import {
   Accordion,
   AccordionContent,

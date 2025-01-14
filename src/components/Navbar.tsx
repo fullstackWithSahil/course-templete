@@ -2,8 +2,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Moon, Sun } from "lucide-react";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { useDarkMode } from "@/lib/Mode";
+import Link from "next/link";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -47,25 +48,21 @@ const Navbar = () => {
             </div>
           </div>
 
-          <div onClick={toggleMode}>
+          <div onClick={toggleMode} className="flex items-center gap-5">
             {mode=="dark"?<Moon/>:<Sun/>}
-          </div>
-
-          {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
+            {/* Desktop Auth Buttons */}
             <SignedOut>
-              <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
-                <SignInButton />
-              </button>
+              <SignInButton />
             </SignedOut>
             <SignedIn>
               <UserButton />
             </SignedIn>
           </div>
 
+
           {/* Mobile menu button */}
           <div className="flex md:hidden">
-            <Button
+            <div
               onClick={toggleMenu}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary dark:focus:ring-primary-light bg-white"
             >
@@ -75,7 +72,7 @@ const Navbar = () => {
               ) : (
                 <Menu className="block h-6 w-6" />
               )}
-            </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -83,30 +80,18 @@ const Navbar = () => {
       {/* Mobile menu */}
       <div className={`md:hidden ${isMenuOpen ? "block" : "hidden"}`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-          <a
+          <Link
             href="/my-courses"
             className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             My Courses
-          </a>
-          <a
+          </Link>
+          <Link
             href="/courses"
             className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             Courses
-          </a>
-        </div>
-        <div className="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex flex-col space-y-2 px-4">
-            <SignedOut>
-              <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
-                <SignInButton />
-              </button>
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-          </div>
+          </Link>
         </div>
       </div>
     </nav>
