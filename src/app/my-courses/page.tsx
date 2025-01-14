@@ -1,3 +1,5 @@
+
+//page.tsx
 import Content from "./Content";
 import Description from "./Description";
 import Comments from "./Comments";
