@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Menu, X, Moon, Sun } from "lucide-react";
 import { useDarkMode } from "@/lib/Mode";
 import Link from "next/link";

@@ -36,6 +36,7 @@ export default function Comments() {
         description:"There was an error commenting on this video. Please try again later"
       })
       setValue("");
+      console.log(error)
     }
   }
   return (

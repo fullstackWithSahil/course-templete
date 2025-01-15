@@ -1,5 +1,5 @@
 "use client";
-import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
+import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from "react";
 
 const Context = createContext<{
     data:boolean;
