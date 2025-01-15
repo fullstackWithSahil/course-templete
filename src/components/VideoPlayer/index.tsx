@@ -1,18 +1,10 @@
 "use client";
 import { Settings, Volume2, VolumeX, Rewind, FastForward } from "lucide-react";
-import { useEffect, useRef, useState, useCallback, Dispatch, SetStateAction } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
 
-const Video = ({ 
-  src,
-  isFullScreen,
-  setIsFullScreen 
-}: { 
-  src: string;
-  isFullScreen:boolean;
-  setIsFullScreen:Dispatch<SetStateAction<boolean>>
-}) => {
+const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
   const resolutions = ["1080", "720", "360", "144"];
   const playbackSpeeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
   const [paused, setPaused] = useState(true);
@@ -28,6 +20,8 @@ const Video = ({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [showControls, setShowControls] = useState(true);
   const [lastTouchTime, setLastTouchTime] = useState(0);
+  const [isFullScreen,setIsFullScreen] = useState(false)
+
 
   // Handle mobile touch events
   const handleTouchStart = useCallback(() => {
@@ -84,16 +78,18 @@ const Video = ({
 
   const inputEvents = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key === " ") {
-        e.preventDefault();
-        playPause();
-      } else if (e.key === "ArrowLeft") {
-        skip(-10);
-      } else if (e.key === "ArrowRight") {
-        skip(10);
-      } else if (e.key === "f") {
-        toggleFullScreen();
-      }
+      if(!disabled){
+        if (e.key === " ") {
+          e.preventDefault();
+          playPause();
+        } else if (e.key === "ArrowLeft") {
+          skip(-10);
+        } else if (e.key === "ArrowRight") {
+          skip(10);
+        } else if (e.key === "f") {
+          toggleFullScreen();
+        }
+      };
     },
     [paused]
   );

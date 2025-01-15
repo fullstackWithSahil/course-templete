@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import ModeProvider from "@/lib/Mode";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
           >
             <Navbar/>
             {children}
+            <Toaster/>
           </ModeProvider>
       </html>
     </ClerkProvider>
