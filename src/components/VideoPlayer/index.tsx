@@ -1,10 +1,18 @@
 "use client";
 import { Settings, Volume2, VolumeX, Rewind, FastForward } from "lucide-react";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, Dispatch, SetStateAction } from "react";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
 
-const Video = ({ src }: { src: string }) => {
+const Video = ({ 
+  src,
+  isFullScreen,
+  setIsFullScreen 
+}: { 
+  src: string;
+  isFullScreen:boolean;
+  setIsFullScreen:Dispatch<SetStateAction<boolean>>
+}) => {
   const resolutions = ["1080", "720", "360", "144"];
   const playbackSpeeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
   const [paused, setPaused] = useState(true);
@@ -18,7 +26,6 @@ const Video = ({ src }: { src: string }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const playerRef = useRef<any | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [isFullScreen, setIsFullScreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [lastTouchTime, setLastTouchTime] = useState(0);
 
@@ -130,6 +137,29 @@ const Video = ({ src }: { src: string }) => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleOrientation = () => {
+      if (isFullScreen) {
+        try {
+          if (window.screen.orientation) {
+            (window.screen.orientation as any).lock("landscape");
+          }
+        } catch (err) {
+          console.error("Failed to lock orientation:", err);
+        }
+      }
+    };
+
+    handleOrientation();
+    window.addEventListener("orientationchange", handleOrientation);
+    return () => {
+      window.removeEventListener("orientationchange", handleOrientation);
+      if (window.screen.orientation) {
+        window.screen.orientation.unlock();
+      }
+    };
+  }, [isFullScreen]);
+
   
   function playPause() {
     setPaused((prev) => !prev);
@@ -180,9 +210,10 @@ const Video = ({ src }: { src: string }) => {
       data-vjs-player
       className={`relative mx-auto ${
         isFullScreen
-          ? "w-screen h-screen"
-          : "w-full max-w-[1000px] aspect-video"
-      }`}
+          ? "lg:w-screen lg:h-screen"
+          : "lg:w-full lg:max-w-[1000px] lg:aspect-video"
+      }
+      `}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onMouseMove={() => setShowControls(true)}
@@ -190,7 +221,7 @@ const Video = ({ src }: { src: string }) => {
       <div className="group h-full">
         <video
           ref={videoRef}
-          className="video-js vjs-big-play-centered w-full h-full absolute"
+          className={`video-js vjs-big-play-centered w-full h-full absolute`}
           controls={false}
         />
         <div
