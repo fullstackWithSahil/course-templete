@@ -89,6 +89,8 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
         } else if (e.key === "f") {
           toggleFullScreen();
         }
+      }else{
+        return;
       };
     },
     [paused]

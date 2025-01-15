@@ -1,8 +1,13 @@
-import { createClient } from '@supabase/supabase-js'
-import { Database } from '../../database.types';
+import { createClient } from "@supabase/supabase-js";
+import { Database } from "../../database.types";
 
-// Create a single supabase client for interacting with your database
-export function createSupabaseClient(){
-    const supabase = createClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
-    return supabase;
+export default async function supabaseClient(supabaseToken:any){
+  const supabase = createClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      global:{headers:{Authorization:`Bearer ${supabaseToken}`},}
+    }
+  );
+  return supabase;
 }
