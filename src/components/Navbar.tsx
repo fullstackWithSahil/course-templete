@@ -32,18 +32,18 @@ const Navbar = () => {
               </span>
             </div>
             <div className="hidden md:flex md:ml-6 space-x-8">
-              <a
+              <Link
                 href="/my-courses"
                 className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light px-3 py-2 text-sm font-medium"
               >
                 My Courses
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/courses"
                 className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light px-3 py-2 text-sm font-medium"
               >
                 Courses
-              </a>
+              </Link>
             </div>
           </div>
 

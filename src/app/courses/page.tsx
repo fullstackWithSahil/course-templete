@@ -9,28 +9,28 @@ export default function Page() {
         description="ffffffffffffffffffffffffffffff" 
         logo={logo} 
         id={30}
-        watch
-      />
+        watch={false}
+        />
       <Card 
         title="Web development" 
         description="ffffffffffffffffffffffffffffff" 
         logo={logo} 
         id={30}
-        watch
-      />
+        watch={false}
+        />
       <Card 
         title="Web development" 
         description="ffffffffffffffffffffffffffffff" 
         logo={logo} 
         id={30}
-        watch
-      />
+        watch={false}
+        />
       <Card 
         title="Web development" 
         description="ffffffffffffffffffffffffffffff" 
         logo={logo} 
         id={30}
-        watch
+        watch={false}
       />
     </main>
   );
