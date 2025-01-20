@@ -44,6 +44,12 @@ const Navbar = () => {
               >
                 Courses
               </Link>
+              <Link
+                href="/chats"
+                className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light px-3 py-2 text-sm font-medium"
+              >
+                Chats
+              </Link>
             </div>
           </div>
 
@@ -90,6 +96,12 @@ const Navbar = () => {
             className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             Courses
+          </Link>
+          <Link
+            href="/chats"
+            className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            Chats
           </Link>
         </div>
       </div>
