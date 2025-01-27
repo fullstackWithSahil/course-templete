@@ -21,9 +21,10 @@ export default function Comments() {
   async function handleSend(){
     const token = await getToken({template:"supabase"});
     const supabase = supabaseClient(token);
-    setdata(false);
+    setdata(prev=>({...prev,disable:false}));
+
     try {
-      (await supabase).from("comments").insert({
+      await supabase.from("comments").insert({
         video:Number(id),
         comment:value,
         commented_by:userId,
@@ -43,7 +44,9 @@ export default function Comments() {
     <div>
       <div className="flex items-center justify-between my-2">
         <h1 className="text-xl">Comments:400</h1>
-        <Button onClick={()=>setdata(true)}>Add a comment</Button>
+        <Button onClick={()=>setdata(prev=>({...prev,disable:true}))}>
+          Add a comment
+        </Button>
       </div>
       {data&&<div>
         <Textarea 

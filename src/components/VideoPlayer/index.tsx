@@ -136,6 +136,25 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
   }, []);
 
   useEffect(() => {
+    if (!playerRef.current) return;
+    
+    const currentTime = playerRef.current.currentTime();
+    const wasPlaying = !playerRef.current.paused();
+    
+    playerRef.current.src({
+      src: `${src}/${currentResolution}/index.m3u8`,
+      type: "application/x-mpegURL",
+    });
+  
+    playerRef.current.one('loadedmetadata', () => {
+      playerRef.current.currentTime(currentTime);
+      if (wasPlaying) {
+        playerRef.current.play();
+      }
+    });
+  }, [currentResolution, src]);
+
+  useEffect(() => {
     const handleOrientation = () => {
       if (isFullScreen) {
         try {
@@ -170,6 +189,25 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
 
   function changeResolution(res: string) {
     if (!playerRef.current) return;
+    
+    // Store current time and playing state
+    const currentTime = playerRef.current.currentTime();
+    const wasPlaying = !playerRef.current.paused();
+    
+    // Update source with new resolution
+    playerRef.current.src({
+      src: `${src}/${res}/index.m3u8`,
+      type: "application/x-mpegURL",
+    });
+    
+    // When video is ready, restore time and playing state
+    playerRef.current.one('loadedmetadata', () => {
+      playerRef.current.currentTime(currentTime);
+      if (wasPlaying) {
+        playerRef.current.play();
+      }
+    });
+  
     setCurrentResolution(res);
     setShowSettings(false);
   }
