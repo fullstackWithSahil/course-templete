@@ -40,7 +40,7 @@ export default function VideoPlayer() {
 
     return (
         <Video 
-            src="https://buisnesstools-course.b-cdn.net/user_2r7lLMtMOfJgVXLJtKHS95nCzlM/sahil2/start/lesson-1.mp4"
+            src="https://buisnesstools-course.b-cdn.net/user_2rfaGmn4G87ocLwMpBcBgTTLexx/tanay/start/lesson-3"
             disabled={data}
         />
     )

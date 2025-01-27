@@ -1,6 +1,8 @@
 "use client";
+import { buyCourse } from "@/actions/buyCourse";
+import { useToast } from "@/hooks/use-toast";
 import supabaseClient from "@/lib/Supabase";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -19,29 +21,52 @@ export default function Card({
 }) {
   const router = useRouter();
   const { userId, getToken } = useAuth();
+  const user = useUser();
+  const {toast} = useToast();
+  if(!userId){
+    return <div>
+      <p>you are not allowed to see this page</p>
+    </div>
+  }
   async function handelClick() {
     if (watch) {
+      console.log("watch clicked");
         if (!userId) return;
-        const token = getToken();
+        const token = await getToken({template:"supabase"});
         const supabase = supabaseClient(token);
+
         //checking if student exists
-        const { data } = await(await supabase)
-            .from("Students")
+        const { data,error } = await supabase
+            .from("students")
             .select("*")
             .eq("teacher", process.env.NEXT_PUBLIC_TEACHER!)
             .eq("student", userId);
-        if (!data) return;
-        //creating a student
-        await(await supabase).from("Students").insert({
+        
+        if (!data || data.length == 0){
+          //creating a student
+          console.log("adding student.....")
+          const res =await supabase.from("students").insert({
             student: userId,
             teacher: process.env.NEXT_PUBLIC_TEACHER,
             course: id,
-        });
+            email: user.user?.primaryEmailAddress?.emailAddress
+          });
+          console.log("added student.....")
+          console.log({res})
+        };
+        
         router.push(`/my-courses/${id}`);
-        return;
+    }else{
+      // handle logic to buy the course
+      const data = await buyCourse(userId!,id);
+      if(data=="Error purchasing course"){
+        toast({
+          title:data,
+        })
+      }
     }
-    //handle logic to buy the course
   }
+
   return (
     <div className="max-w-5xl mx-auto border-2 border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden shadow-lg my-3">
       <div className="grid grid-cols-1 md:grid-cols-3">

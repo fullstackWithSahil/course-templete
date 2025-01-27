@@ -1,5 +1,6 @@
 import logo from "@/assets/logo.png";
 import Card from "@/components/CourseCard";
+import NoCourses from "@/components/NoCourses";
 import { createClient } from "@/lib/server/Supabase";
 
 export default async function Page() {
@@ -9,6 +10,11 @@ export default async function Page() {
     .from("courses")
     .select("*")
     .eq("teacher",teacher);
+  
+  if (!data||!data[0]){
+    return <NoCourses text="The teacker has not created any courses yet"/>
+  }
+  
   return (
     <main className="my-24 px-4">
       {data?.map(course=>(<Card
