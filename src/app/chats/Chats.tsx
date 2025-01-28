@@ -1,3 +1,5 @@
+//Chats.tsx
+
 "use client";
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
@@ -9,25 +11,19 @@ import { useEffect, useRef } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { SupabaseClient } from '@supabase/supabase-js';
 import supabaseClient from "@/lib/Supabase";
+import Message from "./Message";
 
 export default function Chats() {
   const { messages, dispatch } = useChats();
   const { getToken, userId } = useAuth();
   const supabaseRef = useRef<SupabaseClient | null>(null);
 
-  function handleReaction(
-    id: number,
-    reaction: "heart" | "thumbsUp" | "thumbsDown" | "smile"
-  ) {
-    dispatch({ type: "add_reaction", payload: { id, reaction } });
-  }
-
   useEffect(() => {
     async function subscribe() {
       try {
         console.log("connecting to supabase")
         const token = await getToken({ template: "supabase" });
-        const supabase = await supabaseClient(token);
+        const supabase = supabaseClient(token);
         supabaseRef.current = supabase;
         
         supabase
@@ -63,41 +59,13 @@ export default function Chats() {
     };
   }, [getToken, userId, dispatch]);
 
-  const reactions = [
-    { type: "heart", Icon: Heart },
-    { type: "thumbsUp", Icon: ThumbsUp },
-    { type: "thumbsDown", Icon: ThumbsDown },
-    { type: "smile", Icon: Smile },
-  ] as const;
-
   return (
-    <ScrollArea className="h-[400px] pr-4">
-      {messages.map((message) => (
-        <div key={message.id} className="mb-4">
-          <div className="flex items-start space-x-2">
-            <Avatar>
-              <AvatarImage src={message.profile} alt={message.firstname||""} />
-            </Avatar>
-            <div className="flex-1">
-              <p className="font-semibold">{message.firstname}</p>
-              <p>{message.message}</p>
-              <div className="flex space-x-2 mt-2">
-                {reactions.map(({ type, Icon }) => (
-                  <Button
-                    key={type}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleReaction(message.id, type)}
-                  >
-                    <Icon className="h-4 w-4 mr-1" />
-                    {message.reactions[type]}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
+    <ScrollArea className="h-[65vh] px-4">
+      <div className="space-y-4">
+        {messages.map((message) => (
+          <Message key={message.id} {...message} />
+        ))}
+      </div>
     </ScrollArea>
   );
 }

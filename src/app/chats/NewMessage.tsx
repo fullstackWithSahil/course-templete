@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
 import { ImageIcon, Send } from "lucide-react";
-import { useState } from "react";
+import { KeyboardEvent, useState } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
 import supabaseClient from "@/lib/Supabase";
 import { useParams } from "next/navigation";
@@ -26,7 +26,7 @@ export default function NewMessages() {
         if (newMessage.trim() || selectedFile) {
             const newMsg = {
                 message: newMessage,
-                to:"someone",
+                to:process.env.NEXT_PUBLIC_TEACHER||"",
                 firstname: user?.firstName || '',
                 reactions: { heart: 0, thumbsUp: 0, thumbsDown: 0, smile: 0 },
                 profile:user?.imageUrl as string,
@@ -52,29 +52,38 @@ export default function NewMessages() {
         }
     }
 
+    function handleEnter(e:KeyboardEvent<HTMLInputElement>){
+        if(e.key=="Enter"){
+            handleSendMessage();
+        }
+    }
+
     return (
-        <div className="flex w-full space-x-2">
-        <Input
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type your message..."
-            className="flex-grow"
-        />
-        <input
-            type="file"
-            id="file-upload"
-            className="hidden"
-            onChange={handleFileChange}
-            accept="image/*"
-        />
-        <Button variant="outline" size="icon" asChild>
-            <label htmlFor="file-upload" className="cursor-pointer">
-            <ImageIcon className="h-4 w-4" />
-            </label>
-        </Button>
-        <Button onClick={handleSendMessage}>
-            <Send className="h-4 w-4 mr-2" /> Send
-        </Button>
+        <div className="flex w-full space-x-2 flex-wrap sm:flex-nowrap gap-2">
+            <Input
+                value={newMessage}
+                onKeyDown={(e)=>handleEnter(e)}
+                onChange={(e)=>setNewMessage(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-grow min-w-[200px]"
+            />
+            <div className="flex space-x-2">
+                <input
+                    type="file"
+                    id="file-upload"
+                    className="hidden"
+                    onChange={handleFileChange}
+                    accept="image/*"
+                />
+                <Button variant="outline" size="icon" asChild className="shrink-0">
+                    <label htmlFor="file-upload" className="cursor-pointer">
+                        <ImageIcon className="h-4 w-4" />
+                    </label>
+                </Button>
+                <Button onClick={handleSendMessage} className="shrink-0">
+                    <Send className="h-4 w-4 mr-2" /> Send
+                </Button>
+            </div>
         </div>
     );
 }
