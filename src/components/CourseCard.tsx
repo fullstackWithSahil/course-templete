@@ -42,6 +42,9 @@ export default function Card({
             .select("*")
             .eq("teacher", process.env.NEXT_PUBLIC_TEACHER!)
             .eq("student", userId);
+        if(error){
+          console.log(error);
+        }
         
         if (!data || data.length == 0){
           //creating a student

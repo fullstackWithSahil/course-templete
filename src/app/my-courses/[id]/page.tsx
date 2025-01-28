@@ -11,18 +11,18 @@ export default async function Page({params}:{params:{id:string}}) {
   const id = Number(params.id);
   const supabase = await createClient();
   const {data} = await supabase.from("videos").select("*").eq("course",id);
-  const modules: Module[] = data
+  const blocks: Module[] = data
     ? data.reduce((acc: Module[], item) => {
-        const moduleId = item.module ?? "unknown";
-        let module = acc.find((mod) => mod.id === moduleId);
+        const blockId = item.module ?? "unknown";
+        let block = acc.find((mod) => mod.id === blockId);
 
-        if (!module) {
-          module = {
-            id: moduleId,
-            name: moduleId, // Assuming module name is the same as module id
+        if (!block) {
+          block = {
+            id: blockId,
+            name: blockId, // Assuming block name is the same as block id
             videos: [],
           };
-          acc.push(module);
+          acc.push(block);
         }
 
         const video: Video = {
@@ -34,12 +34,12 @@ export default async function Page({params}:{params:{id:string}}) {
           createdAt: item.created_at,
         };
 
-        module.videos.push(video);
+        block.videos.push(video);
         return acc;
       }, [])
     : [];
 
-    const currentVideo = modules[0].videos[0];
+    const currentVideo = blocks[0].videos[0];
     return (
     <ContextProvider currentVideo={currentVideo}>
       <main className="mt-16 md:relative">
@@ -48,7 +48,7 @@ export default async function Page({params}:{params:{id:string}}) {
           <Description/>
           <Comments/>
         </section>
-        <Content modules={modules}/>
+        <Content modules={blocks}/>
       </main>
     </ContextProvider>
   );
