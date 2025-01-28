@@ -1,5 +1,3 @@
-
-//Message.tsx
 "use client";
 import { MessageType, useChats } from './Chatcontext'
 import { Avatar, AvatarImage } from "@/components/ui/avatar";

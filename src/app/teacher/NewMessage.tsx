@@ -31,7 +31,8 @@ export default function NewMessages() {
                 reactions: { heart: 0, thumbsUp: 0, thumbsDown: 0, smile: 0 },
                 profile:user?.imageUrl as string,
                 sender:userId||'',
-                course:id
+                course:id,
+                group:false
             }
             // if (selectedFile) {
             //     newMsg.image = URL.createObjectURL(selectedFile)

@@ -1,24 +1,42 @@
+import logo from "@/assets/logo.png";
+import Card from "@/components/CourseCard";
+import NoCourses from "@/components/NoCourses";
+import { createClient } from "@/lib/server/Supabase";
+import { clerkClient, currentUser } from '@clerk/nextjs/server'
 
-//page.tsx
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import ChatProvider from './Chatcontext'
-import NewMessages from './NewMessage'
-import Chats from './Chats'
+export default async function Page() {
 
-export default function ChatInterface() {
-    return (
-        <ChatProvider>
-            <Card className="w-[95%] mx-[auto] min-h-[90vh] flex flex-col">
-                <CardHeader className="border-b">
-                    <CardTitle className="text-xl md:text-2xl">Chat Room</CardTitle>
-                </CardHeader>
-                <CardContent className="flex-grow p-0">
-                    <Chats/>
-                </CardContent>
-                <CardFooter className="border-t p-4">
-                    <NewMessages/>
-                </CardFooter>
-            </Card>
-        </ChatProvider>
-    )
+  const user = await currentUser();
+  if (!user) {
+    return <NoCourses text="You haven't purchased any courses" />;
+  }
+  const client = await clerkClient();
+  const data = await client.users.getUser(user.id);
+
+
+  if(!data.privateMetadata.purchasedCourses){
+    return <NoCourses text="You havent purchased any courses"/>
+  }
+
+  const Ids:string = data.privateMetadata.purchasedCourses as string;
+  const courseIds = Ids.split(",").map(id =>Number(id));
+  const supabase = await createClient();
+  const {data:courses} = await supabase
+    .from("courses")
+    .select("*")
+    .in("id",courseIds);
+
+  return (
+    <main className="my-24 px-4">
+      {(courses?.map(course=><Card
+        key={course.id}
+        title={course.name||""}
+        description={course.description||""} 
+        logo={logo} 
+        id={course.id}
+        watch={false}
+        buttonText="see Chats"
+      />))}
+    </main>
+  );
 }

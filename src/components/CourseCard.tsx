@@ -12,12 +12,14 @@ export default function Card({
   title,
   description,
   watch,
+  buttonText
 }: {
   logo: any;
   id: number;
   title: string;
   description: string;
   watch: boolean;
+  buttonText?: string;
 }) {
   const router = useRouter();
   const { userId, getToken } = useAuth();
@@ -30,7 +32,6 @@ export default function Card({
   }
   async function handelClick() {
     if (watch) {
-      console.log("watch clicked");
         if (!userId) return;
         const token = await getToken({template:"supabase"});
         const supabase = supabaseClient(token);
@@ -44,19 +45,20 @@ export default function Card({
         
         if (!data || data.length == 0){
           //creating a student
-          console.log("adding student.....")
-          const res =await supabase.from("students").insert({
+          await supabase.from("students").insert({
             student: userId,
             teacher: process.env.NEXT_PUBLIC_TEACHER,
             course: id,
             email: user.user?.primaryEmailAddress?.emailAddress
           });
-          console.log("added student.....")
-          console.log({res})
         };
         
         router.push(`/my-courses/${id}`);
     }else{
+      if(buttonText==="see Chats"){
+        router.push(`/chats/${id}`);
+        return;
+      }
       // handle logic to buy the course
       const data = await buyCourse(userId!,id);
       if(data=="Error purchasing course"){
@@ -87,7 +89,7 @@ export default function Card({
             className="mt-4 px-6 py-2 bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-lg"
             onClick={handelClick}
           >
-            {watch ? "watch" : "buy now"}
+            {watch ? "watch" :buttonText?buttonText:"buy now"}
           </button>
         </div>
       </div>

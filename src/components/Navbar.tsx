@@ -5,6 +5,13 @@ import { useDarkMode } from "@/lib/Mode";
 import Link from "next/link";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
+const links = [
+  {title:"My Courses",link:"/my-courses"},
+  {title:"Courses",link:"/courses"},
+  {title:"Chats",link:"/chats"},
+  {title:"teacher",link:"/teacher"},
+];
+
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const {mode,setMode}= useDarkMode();
@@ -32,24 +39,13 @@ const Navbar = () => {
               </span>
             </div>
             <div className="hidden md:flex md:ml-6 space-x-8">
-              <Link
-                href="/my-courses"
+              {links.map(link=><Link
+                key={link.link}
+                href={link.link}
                 className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light px-3 py-2 text-sm font-medium"
               >
-                My Courses
-              </Link>
-              <Link
-                href="/courses"
-                className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light px-3 py-2 text-sm font-medium"
-              >
-                Courses
-              </Link>
-              <Link
-                href="/chats"
-                className="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light px-3 py-2 text-sm font-medium"
-              >
-                Chats
-              </Link>
+                {link.title}
+              </Link>)}
             </div>
           </div>
 
@@ -85,12 +81,13 @@ const Navbar = () => {
       {/* Mobile menu */}
       <div className={`md:hidden ${isMenuOpen ? "block" : "hidden"}`}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-          <Link
-            href="/my-courses"
+          {links.map(link=><Link
+            key={link.link}
+            href={link.link}
             className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light hover:bg-gray-100 dark:hover:bg-gray-800"
           >
-            My Courses
-          </Link>
+            {link.title}
+          </Link>)}
           <Link
             href="/courses"
             className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light hover:bg-gray-100 dark:hover:bg-gray-800"
