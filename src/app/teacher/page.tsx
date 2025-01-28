@@ -1,6 +1,6 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import ChatProvider from './Chatcontext'
-import NewMessages from './NewMessage'
+import NewMessages from "@/components/chats/Newmessage";
 import Chats from './Chats'
 
 export default function ChatInterface(){ 
@@ -14,7 +14,7 @@ export default function ChatInterface(){
                     <Chats/>
                 </CardContent>
                 <CardFooter className="border-t p-4">
-                    <NewMessages/>
+                    <NewMessages group={false} id={null}/>
                 </CardFooter>
             </Card>
         </ChatProvider>

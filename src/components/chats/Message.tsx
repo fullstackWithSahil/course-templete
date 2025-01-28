@@ -1,17 +1,16 @@
 "use client";
-import { MessageType, useChats } from './Chatcontext'
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Heart, ThumbsUp, ThumbsDown, Smile } from "lucide-react";
+import { MessageType } from "./types";
 
 
-export default function Message(message:MessageType) {
-    const {dispatch } = useChats();
+export default function Message(message:MessageType&{dispatch:any}) {
     function handleReaction(
         id: number,
         reaction: "heart" | "thumbsUp" | "thumbsDown" | "smile"
       ) {
-        dispatch({ type: "add_reaction", payload: { id, reaction } });
+        message.dispatch({ type: "add_reaction", payload: { id, reaction } });
       }
     
       const reactions = [

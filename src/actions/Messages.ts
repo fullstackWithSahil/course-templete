@@ -11,7 +11,6 @@ export async function getOldMessages(){
             .eq("group",false)
             .or(`sender.eq.${process.env.NEXT_PUBLIC_TEACHER},to.eq.${process.env.NEXT_PUBLIC_TEACHER}`);
         
-        console.log({data});
         return data;
     } catch (error) {
         console.log("there was an error getting old messages", error);
@@ -28,7 +27,7 @@ export async function getOldGroupMessages(courseId:number){
             .eq("course", courseId)
             .eq("group",true)
             .or(`sender.eq.${process.env.NEXT_PUBLIC_TEACHER},to.eq.${process.env.NEXT_PUBLIC_TEACHER}`);
-        console.log({data});
+        
         return data;
     } catch (error) {
         console.log("there was an error getting old messages", error);

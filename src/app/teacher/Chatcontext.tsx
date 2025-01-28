@@ -1,28 +1,7 @@
 "use client";
 
+import { ActionTypes, MessageType } from "@/components/chats/types";
 import { createContext, Dispatch, ReactNode, useContext, useReducer } from "react";
-
-export interface MessageType {
-    id: number;
-    firstname: string|null;
-    course:number|null;
-    profile: string;
-    sender: string;
-    message: string;
-    created_at: Date;
-    reactions: {
-        heart: number;
-        thumbsUp: number;
-        thumbsDown: number;
-        smile: number;
-    };
-}
-
-type ActionTypes =
-    | { type: "add_message"; payload: MessageType }
-    | { type: "add_many"; payload: MessageType[]}
-    | { type: "delete_message"; payload: { id: number } }
-    | { type: "add_reaction"; payload: { id: number; reaction: "heart" | "thumbsUp" | "thumbsDown" | "smile" } };
 
 const Context = createContext<{ messages: MessageType[]; dispatch: Dispatch<ActionTypes> } | null>(null);
 

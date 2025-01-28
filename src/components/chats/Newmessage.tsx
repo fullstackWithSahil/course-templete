@@ -5,12 +5,14 @@ import { ImageIcon, Send } from "lucide-react";
 import { KeyboardEvent, useState } from "react";
 import { useAuth, useUser } from "@clerk/nextjs";
 import supabaseClient from "@/lib/Supabase";
-import { useParams } from "next/navigation";
 
-export default function NewMessages() {
-    const params = useParams();
-    const id = Number(params.id);
-    
+export default function NewMessages({
+    id,
+    group
+}:{
+    id:number|null,
+    group:boolean
+}) {    
     const {user} = useUser()
     const {userId,getToken} = useAuth();
     const [newMessage, setNewMessage] = useState('');
@@ -32,7 +34,7 @@ export default function NewMessages() {
                 profile:user?.imageUrl as string,
                 sender:userId||'',
                 course:id,
-                group:false
+                group
             }
             // if (selectedFile) {
             //     newMsg.image = URL.createObjectURL(selectedFile)
