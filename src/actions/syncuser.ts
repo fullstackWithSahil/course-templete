@@ -14,7 +14,7 @@ export async function syncUpUser(userId: string, courseId: number, email: string
         // Supabase insertion
         const supabase = await createClient();
         const { error: supabaseError, data: supabaseData } = await supabase
-            .from("Students")
+            .from("students")
             .insert({
                 teacher: process.env.NEXT_PUBLIC_TEACHER,
                 course: courseId,

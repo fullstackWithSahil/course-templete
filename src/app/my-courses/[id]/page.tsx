@@ -7,8 +7,13 @@ import { createClient } from "@/lib/server/Supabase";
 import { Module, Video } from "./Context";
 
 
-export default async function Page({params}:{params:{id:string}}) {
-  const id = Number(params.id);
+interface PageProps {
+  params: Promise<{ id: string }>
+}
+
+export default async function Page({params}:PageProps) {
+  const param = await params;
+  const id = Number(param.id);
   const supabase = await createClient();
   const {data} = await supabase.from("videos").select("*").eq("course",id);
   const blocks: Module[] = data
