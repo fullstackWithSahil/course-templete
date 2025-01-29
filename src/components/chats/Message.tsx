@@ -3,15 +3,37 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Heart, ThumbsUp, ThumbsDown, Smile } from "lucide-react";
 import { MessageType } from "./types";
+import { useAuth } from "@clerk/nextjs";
+import supabaseClient from "@/lib/Supabase";
+import { useEffect } from "react";
 
 
 export default function Message(message:MessageType&{dispatch:any}) {
-    function handleReaction(
+    const {getToken} = useAuth();
+    async function handleReaction(
         id: number,
         reaction: "heart" | "thumbsUp" | "thumbsDown" | "smile"
       ) {
         message.dispatch({ type: "add_reaction", payload: { id, reaction } });
-      }
+    }
+    useEffect(()=>{
+        console.log("reactions",message.reactions)
+        getToken({template:"supabase"}).then(async(token)=>{
+            const supabase = supabaseClient(token);
+            const res = await supabase
+                .from("messages")
+                .update({reactions:JSON.stringify(message.reactions)})
+                .eq("id",message.id);
+            console.log(res);
+        });
+    },
+    [
+        message.reactions.heart,
+        message.reactions.smile,
+        message.reactions.thumbsDown,
+        message.reactions.thumbsUp
+    ]
+    )
     
       const reactions = [
         { type: "heart", Icon: Heart },

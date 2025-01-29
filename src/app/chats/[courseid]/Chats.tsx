@@ -19,7 +19,12 @@ export default function Chats({courseId}:{courseId:number}) {
     async function subscribe() {
       try {
         const data = await getOldGroupMessages(courseId);
-        dispatch({ type: "add_many", payload: data as any });
+        if(data=="error") return;
+        const dataToSend = data?.map(message=>({
+            ...message,
+            reactions:JSON.parse(message.reactions as string)
+        }))
+        dispatch({ type: "add_many", payload: dataToSend as any });
         const token = await getToken({ template: "supabase" });
         const supabase = supabaseClient(token);
         supabaseRef.current = supabase;
@@ -56,6 +61,8 @@ export default function Chats({courseId}:{courseId:number}) {
       }
     };
   }, [getToken, userId, dispatch]);
+
+  console.log({messages})
 
   return (
     <ScrollArea className="h-[65vh] px-4">

@@ -1,10 +1,10 @@
 import Content from "./Content";
 import Description from "./Description";
-import Comments from "./Comments";
 import ContextProvider from "./Context";
 import VideoPlayer from "./VideoPlayer";
 import { createClient } from "@/lib/server/Supabase";
 import { Module, Video } from "./Context";
+import CommentWrapper from "./CommentWrapper";
 
 
 interface PageProps {
@@ -51,7 +51,7 @@ export default async function Page({params}:PageProps) {
         <section className="mx-2 w-full md:w-2/3 md:absolute top-0 left-0">
           <VideoPlayer/>
           <Description/>
-          <Comments/>
+          <CommentWrapper/>
         </section>
         <Content modules={blocks}/>
       </main>

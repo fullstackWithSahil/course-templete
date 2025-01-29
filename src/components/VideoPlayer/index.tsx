@@ -78,7 +78,9 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
 
   const inputEvents = useCallback(
     (e: KeyboardEvent) => {
-      if(!disabled){
+      if(disabled){
+        return;
+      }else{
         if (e.key === " ") {
           e.preventDefault();
           playPause();
@@ -89,8 +91,6 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
         } else if (e.key === "f") {
           toggleFullScreen();
         }
-      }else{
-        return;
       };
     },
     [paused]

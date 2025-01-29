@@ -7,7 +7,7 @@ interface PageProps {
     params: Promise<{ courseid: string }>
 }
   
-export default async function ChatInterface({params}:PageProps){
+export default async function Page({params}:PageProps){
     const param = await params;
     const id = Number(param.courseid);
     return (
