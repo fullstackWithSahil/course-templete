@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import ModeProvider from "@/lib/Mode";
+import ModeProvider from "@/lib/ModeProvider";
+import { Toaster } from "@/components/ui/sonner"
 import { ClerkProvider } from "@clerk/nextjs";
-import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,13 +29,11 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-          <ModeProvider
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
-            <Navbar/>
-            {children}
-            <Toaster/>
-          </ModeProvider>
+        <ModeProvider className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <Navbar/>
+          {children}
+          <Toaster/>
+        </ModeProvider>
       </html>
     </ClerkProvider>
   );

@@ -4,8 +4,8 @@ import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useStat
 import { cn } from "./utils";
 
 type modetype = { 
-  mode: "dark" | "light"; 
-  setMode: Dispatch<SetStateAction<"dark" | "light">>; 
+    theme: "dark" | "light"; 
+    setTheme: Dispatch<SetStateAction<"dark" | "light">>; 
 }|null
 
 
@@ -18,10 +18,10 @@ export default function ModeProvider({
   children:ReactNode,
   className:string
 }) {
-  const [mode,setMode] = useState<"dark"|"light">("dark");
+  const [theme,setTheme] = useState<"dark"|"light">("dark");
   return (
-    <ModeContext value={{mode,setMode}}>
-      <body className={cn(mode,className)}>
+    <ModeContext value={{theme,setTheme}}>
+      <body className={cn(theme,className)}>
         {children}
       </body>
     </ModeContext>
@@ -29,7 +29,7 @@ export default function ModeProvider({
 }
 
 
-export function useDarkMode(){
+export function useTheme(){
   const mode = useContext(ModeContext);
   if (!mode){
     throw new Error("Invalid mode context");
