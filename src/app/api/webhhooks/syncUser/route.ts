@@ -54,7 +54,7 @@ export async function POST(req: Request) {
   console.log('Webhook payload:', body)
   try {
     const supabase = await createClient();
-    const {data,error} = await supabase.from("students").insert({
+    const {error} = await supabase.from("students").insert({
         teacher: process.env.NEXT_PUBLIC_TEACHER,
     }).select();
     if(error){

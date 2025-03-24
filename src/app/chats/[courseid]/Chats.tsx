@@ -60,7 +60,7 @@ export default function Chats({courseId}:{courseId:number}) {
         console.log("dis connecting to supabase");
       }
     };
-  }, [getToken, userId, dispatch]);
+  }, [getToken, userId, dispatch,courseId]);
 
   console.log({messages})
 
