@@ -1,10 +1,10 @@
 "use client";
 import { buyCourse } from "@/actions/buyCourse";
-import { useToast } from "@/hooks/use-toast";
 import supabaseClient from "@/lib/Supabase";
 import { useAuth, useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function Card({
   logo,
@@ -24,7 +24,7 @@ export default function Card({
   const router = useRouter();
   const { userId, getToken } = useAuth();
   const user = useUser();
-  const {toast} = useToast();
+
   if(!userId){
     return <div>
       <p>you are not allowed to see this page</p>
@@ -65,9 +65,7 @@ export default function Card({
       // handle logic to buy the course
       const data = await buyCourse(userId!,id);
       if(data=="Error purchasing course"){
-        toast({
-          title:data,
-        })
+        toast(data);
       }
     }
   }

@@ -15,14 +15,10 @@ const links = [
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const {mode,setMode}= useDarkMode();
-  function toggleMode(){
-    if (mode=="dark"){
-      setMode("light");
-    }else{
-      setMode("dark");
-    }
+  function toggleMode() {
+    setMode(prevMode => prevMode === "dark" ? "light" : "dark");
   }
-
+  
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -50,7 +46,7 @@ const Navbar = () => {
           </div>
 
           <div onClick={toggleMode} className="flex items-center gap-5">
-            {mode=="dark"?<Moon/>:<Sun/>}
+            {mode=="dark"?<Moon className="cursor-pointer"/>:<Sun className="cursor-pointer"/>}
             {/* Desktop Auth Buttons */}
             <SignedOut>
               <SignInButton />

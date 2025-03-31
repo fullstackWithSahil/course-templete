@@ -1,38 +1,36 @@
 "use client";
 
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from "react";
-import { cn } from "./utils";
 
-type modetype = { 
-  mode: "dark" | "light"; 
-  setMode: Dispatch<SetStateAction<"dark" | "light">>; 
-}|null
+type ModeType = {
+  mode: "dark" | "light";
+  setMode: Dispatch<SetStateAction<"dark" | "light">>;
+};
 
-
-const ModeContext = createContext<modetype>(null);
+const ModeContext = createContext<ModeType | null>(null);
 
 export default function ModeProvider({
   children,
   className
-}:{
-  children:ReactNode,
-  className:string
+}: {
+  children: ReactNode,
+  className: string
 }) {
-  const [mode,setMode] = useState<"dark"|"light">("dark");
+  const [mode, setMode] = useState<"dark" | "light">("light");
+  
   return (
-    <ModeContext value={{mode,setMode}}>
-      <body className={cn(mode,className)}>
+    <ModeContext.Provider value={{ mode, setMode }}>
+      <body className={mode + " " + className}>
         {children}
       </body>
-    </ModeContext>
-  )
+    </ModeContext.Provider>
+  );
 }
 
-
-export function useDarkMode(){
+export function useDarkMode() {
   const mode = useContext(ModeContext);
-  if (!mode){
+  if (!mode) {
     throw new Error("Invalid mode context");
   }
-  return mode
+  return mode;
 }

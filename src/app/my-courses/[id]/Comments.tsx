@@ -4,15 +4,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useDisableControls } from "./Context";
 import  supabaseClient from "@/lib/Supabase";
-import { useToast } from "@/hooks/use-toast";
 import { useAuth, useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
+
 
 export default function Comments({video}:{video:number}) {
   const {getToken,userId} = useAuth();
   const User = useUser();
   const {data,setdata} = useDisableControls();
   const [value,setValue] = useState("");
-  const {toast}= useToast();
+
   async function handleSend(){
     const token = await getToken({template:"supabase"});
     const supabase = supabaseClient(token);
@@ -28,10 +29,7 @@ export default function Comments({video}:{video:number}) {
       console.log({res})
       setValue("");
     } catch (error) {
-      toast({
-        title:"Error commenting on this video",
-        description:"There was an error commenting on this video. Please try again later"
-      })
+      toast("There was an error commenting on this video. Please try again later")
       setValue("");
       console.log(error)
     }
