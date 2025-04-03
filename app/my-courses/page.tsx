@@ -5,7 +5,6 @@ import { createClient } from "@/lib/server/Supabase";
 import { clerkClient, currentUser } from '@clerk/nextjs/server'
 
 export default async function Page() {
-
   const user = await currentUser();
   if (!user) {
     return <NoCourses text="You haven't purchased any courses" />;
