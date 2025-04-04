@@ -9,7 +9,6 @@ const links = [
   {title:"My Courses",link:"/my-courses"},
   {title:"Courses",link:"/courses"},
   {title:"Chats",link:"/chats"},
-  {title:"teacher",link:"/teacher"},
 ];
 
 const Navbar = () => {
