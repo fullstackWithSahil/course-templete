@@ -1,20 +1,21 @@
-//page.tsx
-import { supabaseClient } from "@/lib/server/Supabase";
-import ContextProvider, { Module, Video as VideoType } from "./Context";
 import Content from "./Content";
-import VideoPlayer from "./Videoplayer";
+import Description from "./Description";
+import ContextProvider from "./Context";
+import VideoPlayer from "./VideoPlayer";
+import { Module, Video } from "./Context";
+import CommentWrapper from "./CommentWrapper";
+import { supabaseClient } from "@/lib/server/Supabase";
+
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>
 }
 
-export default async function Page({ params }: PageProps) {
+export default async function Page({params}:PageProps) {
   const param = await params;
   const id = Number(param.id);
-  const supabase = supabaseClient();
-  const { data } = await supabase.from("videos").select("*").eq("course", id);
-
-  //formatting the videos
+  const supabase = supabaseClient(); 
+  const {data} = await supabase.from("videos").select("*").eq("course",id);
   const blocks: Module[] = data
     ? data.reduce((acc: Module[], item) => {
         const blockId = item.module ?? "unknown";
@@ -29,7 +30,7 @@ export default async function Page({ params }: PageProps) {
           acc.push(block);
         }
 
-        const video: VideoType = {
+        const video: Video = {
           id: item.id.toString(),
           title: item.title ?? "Untitled",
           description: item.description ?? "",
@@ -44,15 +45,16 @@ export default async function Page({ params }: PageProps) {
     : [];
 
     const currentVideo = blocks[0].videos[0];
-    console.log(data);
     return (
-        <ContextProvider currentVideo={currentVideo}>
-            <main className="mt-16">
-                <section className="flex flex-wrap">
-                    <VideoPlayer/>
-                    <Content blocks={blocks}/>
-                </section>
-            </main>
-        </ContextProvider>
-    );
+    <ContextProvider currentVideo={currentVideo}>
+      <main className="mt-16 md:relative">
+        <section className="mx-2 w-full md:w-2/3 md:absolute top-0 left-0">
+          <VideoPlayer/>
+          <Description/>
+          <CommentWrapper/>
+        </section>
+        <Content modules={blocks}/>
+      </main>
+    </ContextProvider>
+  );
 }

@@ -1,33 +1,40 @@
+"use client";
 import {
   Accordion,
+  AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Module } from "./Context";
-import AccordionVideo from "./AccordionVideo";
 
-export default async function Content({modules}:{modules:Module[]}) {
+export default function Content({ blocks }: { blocks: Module[] }) {
   return (
-    <section className="w-full md:w-1/4 md:absolute top-0 right-0">
+    <div className="w-full md:w-1/3">
       <Accordion type="single" collapsible>
-        {modules.map((item, i) => (
-          <AccordionItem value={`item-${i}`} key={i}>
-            <AccordionTrigger className="text-xl font-bold mx-2">
-              {item.name}
+        {blocks.map((block, i) => (
+          <AccordionItem key={block.id} value={`item-${i}`}>
+            <AccordionTrigger>
+              <h3 className="text-2xl font-bold text-center capitalize">
+                {block.name}
+              </h3>
             </AccordionTrigger>
-            {item.videos.map((video, i) =><AccordionVideo 
-              key={i}
-              i={i}
-              id={video.id}
-              description={video.description}
-              thumbnail={video.thumbnail} 
-              url={video.url} 
-              title={video.title}
-              createdAt={video.createdAt}              
-            />)}
+            <AccordionContent>
+              {block.videos.map((video, i) => (
+                <div className="flex items-center gap-2 mb-3" key={video.id}>
+                  <img
+                    src={video.thumbnail}
+                    alt={video.title}
+                    className="w-1/4"
+                  />
+                  <h3 className="text-xl font-medium">
+                    Lesson-{i}: {video.title}
+                  </h3>
+                </div>
+              ))}
+            </AccordionContent>
           </AccordionItem>
         ))}
       </Accordion>
-    </section>
+    </div>
   );
 }

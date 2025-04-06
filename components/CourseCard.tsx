@@ -1,7 +1,7 @@
 "use client";
 import { buyCourse } from "@/actions/buyCourse";
 import supabaseClient from "@/lib/Supabase";
-import { useAuth, useUser } from "@clerk/nextjs";
+import { useAuth, useSession, useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -22,7 +22,8 @@ export default function Card({
   buttonText?: string;
 }) {
   const router = useRouter();
-  const { userId, getToken } = useAuth();
+  const { userId } = useAuth();
+  const {session} = useSession();
   const user = useUser();
 
   if(!userId){
@@ -33,8 +34,7 @@ export default function Card({
   async function handelClick() {
     if (watch) {
         if (!userId) return;
-        const token = await getToken({template:"supabase"});
-        const supabase = supabaseClient(token);
+        const supabase = supabaseClient(session);
 
         //checking if student exists
         const { data,error } = await supabase

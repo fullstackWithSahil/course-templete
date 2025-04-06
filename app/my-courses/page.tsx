@@ -1,7 +1,6 @@
 import logo from "@/assets/logo.png";
 import Card from "@/components/CourseCard";
 import NoCourses from "@/components/NoCourses";import { supabaseClient } from "@/lib/server/Supabase";
-;
 import { clerkClient, currentUser } from '@clerk/nextjs/server'
 
 export default async function Page() {

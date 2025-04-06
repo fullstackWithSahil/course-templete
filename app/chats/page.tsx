@@ -7,12 +7,10 @@ import { useSession, useUser } from "@clerk/nextjs";
 import Message from "./Message";
 import Inputarea from "./Inputarea";
 import supabaseClient from "@/lib/Supabase";
-import { useTheme } from "next-themes";
 
 export default function Page() {
   const { state: messages } = useMessages();
   const { addMessage, updateMessage, deleteMessage } = useMessageActions();
-  const { theme } = useTheme();
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useUser();

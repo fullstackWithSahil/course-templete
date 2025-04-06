@@ -12,7 +12,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Edit, MoreVertical, Trash2 } from "lucide-react";
-import { useTheme } from "next-themes";
 
 export default function Message({
   isUserMessage,
@@ -32,7 +31,6 @@ export default function Message({
   const { deleteMessage, updateMessage } = useMessageActions();  
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
-  const { theme } = useTheme();
   
   const handleEdit = (id: number) => {
     if (editText.trim()) {

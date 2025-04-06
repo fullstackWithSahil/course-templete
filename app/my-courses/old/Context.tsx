@@ -45,7 +45,7 @@ export default function ContextProvider({
     )
 }
 
-export function useVideoContext(){
+export function useDisableControls(){
     const data = useContext(Context);
     if(!data){
         throw new Error("Context is empty");

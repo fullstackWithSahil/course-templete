@@ -7,8 +7,8 @@ export default function Description() {
     <div
       className={
         more
-          ? "p-2 bg-gray-300 dark:bg-gray-900"
-          : "p-2 rounded-md bg-gray-300 flex items-center justify-center dark:bg-gray-900"
+          ? "p-2 bg-gray-300 dark:bg-gray-900 mx-1 rounded-md"
+          : "p-2 rounded-md mx-1 bg-gray-300 flex items-center justify-center dark:bg-gray-900"
       }
     >
       <p className={more ? "" : "truncate"}>
