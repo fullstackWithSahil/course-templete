@@ -4,19 +4,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useDisableControls } from "./Context";
 import  supabaseClient from "@/lib/Supabase";
-import { useAuth, useUser } from "@clerk/nextjs";
+import { useAuth, useSession, useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 
 
 export default function Comments({video}:{video:number}) {
-  const {getToken,userId} = useAuth();
+  const {userId} = useAuth();
   const User = useUser();
   const {data,setdata} = useDisableControls();
   const [value,setValue] = useState("");
+  
+  const {session} = useSession();
+  const supabase = supabaseClient(session);
 
   async function handleSend(){
-    const token = await getToken({template:"supabase"});
-    const supabase = supabaseClient(token);
     setdata(prev=>({...prev,disable:false}));
 
     try {

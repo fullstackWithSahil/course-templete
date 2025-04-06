@@ -1,7 +1,7 @@
 import logo from "@/assets/logo.png";
 import Card from "@/components/CourseCard";
-import NoCourses from "@/components/NoCourses";
-import { createClient } from "@/lib/server/Supabase";
+import NoCourses from "@/components/NoCourses";import { supabaseClient } from "@/lib/server/Supabase";
+;
 import { clerkClient, currentUser } from '@clerk/nextjs/server'
 
 export default async function Page() {
@@ -19,7 +19,8 @@ export default async function Page() {
 
   const Ids:string = data.privateMetadata.purchasedCourses as string;
   const courseIds = Ids.split(",").map(id =>Number(id));
-  const supabase = await createClient();
+  
+  const supabase = supabaseClient();
   const {data:courses} = await supabase
     .from("courses")
     .select("*")

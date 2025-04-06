@@ -3,6 +3,9 @@
 # A string used to distinguish different Supabase projects on the same host. Defaults to the
 # working directory name when running `supabase init`.
 project_id = "projectv10"
+[auth.third_party.clerk]
+enabled = true
+domain = "https://picked-phoenix-96.clerk.accounts.dev"
 
 [api]
 enabled = true

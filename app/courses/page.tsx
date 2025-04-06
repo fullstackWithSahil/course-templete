@@ -1,10 +1,10 @@
 import logo from "@/assets/logo.png";
 import Card from "@/components/CourseCard";
 import NoCourses from "@/components/NoCourses";
-import { createClient } from "@/lib/server/Supabase";
+import { supabaseClient } from "@/lib/server/Supabase";
 
 export default async function Page() {
-  const supabase = await createClient();
+  const supabase = supabaseClient();
   const teacher = process.env.NEXT_PUBLIC_TEACHER!;
   const {data} = await supabase
     .from("courses")

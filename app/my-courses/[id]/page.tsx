@@ -2,9 +2,9 @@ import Content from "./Content";
 import Description from "./Description";
 import ContextProvider from "./Context";
 import VideoPlayer from "./VideoPlayer";
-import { createClient } from "@/lib/server/Supabase";
 import { Module, Video } from "./Context";
 import CommentWrapper from "./CommentWrapper";
+import { supabaseClient } from "@/lib/server/Supabase";
 
 
 interface PageProps {
@@ -14,7 +14,7 @@ interface PageProps {
 export default async function Page({params}:PageProps) {
   const param = await params;
   const id = Number(param.id);
-  const supabase = await createClient();
+  const supabase = supabaseClient();
   const {data} = await supabase.from("videos").select("*").eq("course",id);
   const blocks: Module[] = data
     ? data.reduce((acc: Module[], item) => {

@@ -1,8 +1,9 @@
-import { createClient } from '@/lib/server/Supabase'
+import { supabaseClient } from '@/lib/server/Supabase';
 import { Comment } from './Comment';
 
+
 export default async function Oldcomments({video}:{video:number}) {
-    const supabase = await createClient();
+    const supabase = supabaseClient();
     const {data} = await supabase.from("comments").select("*").eq("video",video);
     
   return (

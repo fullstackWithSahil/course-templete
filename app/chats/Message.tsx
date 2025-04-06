@@ -47,25 +47,22 @@ export default function Message({
     <div 
       className={`flex items-start gap-3 ${isUserMessage ? "flex-row-reverse" : "flex-row"}`}
     >
-      {/* Avatar */}
-      <Avatar className="h-10 w-10 flex-shrink-0">
-        <AvatarImage src={profile || undefined} alt={firstname || "User"} />
-        <AvatarFallback>{firstname ? getInitials(firstname) : "U"}</AvatarFallback>
-      </Avatar>
       
-      <div className="relative max-w-[75%]">
-        <div className={`text-xs mb-1 ${isUserMessage ? "text-right" : "text-left"} text-gray-500`}>
-          {firstname || "Unknown user"}
-        </div>
-        
+      <div className="relative max-w-[75%]">        
         {/* Message bubble */}
         <div 
-          className={`p-3 rounded-lg shadow-sm ${
+          className={`p-3 rounded-lg shadow-sm flex items-center gap-2 ${
             isUserMessage 
               ? "bg-blue-500 text-white" 
               : "bg-gray-200 text-gray-800"
           }`}
         >
+          {/* Avatar */}
+          <Avatar className="h-10 w-10 flex-shrink-0">
+            <AvatarImage src={profile || undefined} alt={firstname || "User"} />
+            <AvatarFallback>{firstname ? getInitials(firstname) : "U"}</AvatarFallback>
+          </Avatar>
+
           {editingId === id ? (
             <div className="flex flex-col gap-2">
               <Input 
@@ -73,7 +70,7 @@ export default function Message({
                 onChange={(e) => setEditText(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleEdit(id)}
                 autoFocus
-                className="bg-white"
+                // className="bg-white"
               />
               <div className="flex justify-end gap-2">
                 <Button 
@@ -92,41 +89,40 @@ export default function Message({
               </div>
             </div>
           ) : (
-            <>
+            <div>
               <div>{message}</div>
               <div className="text-xs mt-1 opacity-70">
                 {new Date(created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
-            </>
+            </div>
+          )}
+          {/* Action buttons (only for current user's messages) */}
+          {isUserMessage && editingId !== id && (
+            <div className="self-center">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <MoreVertical size={16} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => startEditing(message || "", id)}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="text-red-500" 
+                    onClick={() => deleteMessage(id)}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           )}
         </div>
       </div>
-      
-      {/* Action buttons (only for current user's messages) */}
-      {isUserMessage && editingId !== id && (
-        <div className="self-center">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <MoreVertical size={16} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => startEditing(message || "", id)}>
-                <Edit className="mr-2 h-4 w-4" />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                className="text-red-500" 
-                onClick={() => deleteMessage(id)}
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      )}
     </div>
   );
 }

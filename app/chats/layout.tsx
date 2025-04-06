@@ -1,8 +1,8 @@
 import NoCourses from "@/components/NoCourses";
-import { createClient } from "@/lib/server/Supabase";
 import { clerkClient, currentUser } from '@clerk/nextjs/server'
 import { ReactNode } from "react";
 import MessagesProvider from "./context";
+import { supabaseClient } from "@/lib/server/Supabase";
 
 export default async function Layout({children}: {children: ReactNode}) {
 
@@ -20,7 +20,7 @@ export default async function Layout({children}: {children: ReactNode}) {
 
   const Ids:string = data.privateMetadata.purchasedCourses as string;
   const courseIds = Ids.split(",").map(id =>Number(id));
-  const supabase = await createClient();
+  const supabase = supabaseClient();
   const {data:courses} = await supabase
     .from("courses")
     .select("*")
