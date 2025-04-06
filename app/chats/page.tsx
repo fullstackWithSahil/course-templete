@@ -1,15 +1,18 @@
+//page.tsx
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useMessages, useMessageActions } from "./context"; // Using both the state and actions
+import { useMessages, useMessageActions } from "./context";
 import { useSession, useUser } from "@clerk/nextjs";
 import Message from "./Message";
 import Inputarea from "./Inputarea";
 import supabaseClient from "@/lib/Supabase";
+import { useTheme } from "next-themes";
 
 export default function Page() {
   const { state: messages } = useMessages();
   const { addMessage, updateMessage, deleteMessage } = useMessageActions();
+  const { theme } = useTheme();
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useUser();
@@ -83,12 +86,12 @@ export default function Page() {
   };
 
   return (
-    <div className="flex flex-col h-screen max-h-screen p-4 bg-gray-50">
-      <div className="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Chat Messages</div>
+    <div className="flex flex-col h-screen max-h-screen p-2 sm:p-3 md:p-4 bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+      <div className="text-lg sm:text-xl font-bold mb-2 sm:mb-4 text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700 pb-2">Chat Messages</div>
       
       {/* Messages container */}
-      <div className="flex-1 overflow-y-auto mb-4 pr-2">
-        <div className="flex flex-col gap-6">
+      <div className="flex-1 overflow-y-auto mb-2 sm:mb-4 pr-1 sm:pr-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+        <div className="flex flex-col gap-4 sm:gap-6">
           {messages.map((msg) => {
             const isUserMessage = isCurrentUser(msg.sender);
             return <Message

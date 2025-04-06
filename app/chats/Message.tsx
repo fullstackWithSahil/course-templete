@@ -1,3 +1,4 @@
+//Message.tsx
 "use client";
 import {
   DropdownMenu,
@@ -11,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Edit, MoreVertical, Trash2 } from "lucide-react";
-
+import { useTheme } from "next-themes";
 
 export default function Message({
   isUserMessage,
@@ -31,6 +32,8 @@ export default function Message({
   const { deleteMessage, updateMessage } = useMessageActions();  
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
+  const { theme } = useTheme();
+  
   const handleEdit = (id: number) => {
     if (editText.trim()) {
       updateMessage(id, { message: editText });
@@ -43,78 +46,82 @@ export default function Message({
     setEditingId(id);
     setEditText(message || "");
   };
+  
   return (
     <div 
-      className={`flex items-start gap-3 ${isUserMessage ? "flex-row-reverse" : "flex-row"}`}
+      className={`flex items-start gap-2 md:gap-3 ${isUserMessage ? "flex-row-reverse" : "flex-row"}`}
     >
-      
-      <div className="relative max-w-[75%]">        
+      <div className="relative w-full sm:max-w-[85%] md:max-w-[75%]">        
         {/* Message bubble */}
         <div 
-          className={`p-3 rounded-lg shadow-sm flex items-center gap-2 ${
+          className={`p-2 md:p-3 rounded-lg shadow-sm flex items-start gap-2 ${
             isUserMessage 
-              ? "bg-blue-500 text-white" 
-              : "bg-gray-200 text-gray-800"
+              ? "bg-blue-500 text-white dark:bg-blue-600" 
+              : "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
           }`}
         >
           {/* Avatar */}
-          <Avatar className="h-10 w-10 flex-shrink-0">
+          <Avatar className="h-8 w-8 md:h-10 md:w-10 flex-shrink-0">
             <AvatarImage src={profile || undefined} alt={firstname || "User"} />
-            <AvatarFallback>{firstname ? getInitials(firstname) : "U"}</AvatarFallback>
+            <AvatarFallback className="text-xs md:text-sm">{firstname ? getInitials(firstname) : "U"}</AvatarFallback>
           </Avatar>
 
           {editingId === id ? (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 w-full">
               <Input 
                 value={editText} 
                 onChange={(e) => setEditText(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleEdit(id)}
                 autoFocus
-                // className="bg-white"
+                className="bg-white dark:bg-gray-800 text-sm md:text-base"
               />
               <div className="flex justify-end gap-2">
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={() => setEditingId(null)}
+                  className="text-xs md:text-sm h-7 md:h-8"
                 >
                   Cancel
                 </Button>
                 <Button 
                   size="sm" 
                   onClick={() => handleEdit(id)}
+                  className="text-xs md:text-sm h-7 md:h-8"
                 >
                   Save
                 </Button>
               </div>
             </div>
           ) : (
-            <div>
-              <div>{message}</div>
+            <div className="flex-1 break-words">
+              <div className="text-sm md:text-base">{message}</div>
               <div className="text-xs mt-1 opacity-70">
                 {new Date(created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
             </div>
           )}
+          
           {/* Action buttons (only for current user's messages) */}
           {isUserMessage && editingId !== id && (
-            <div className="self-center">
+            <div className="self-start ml-auto">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <MoreVertical size={16} />
+                  <Button variant="ghost" size="sm" className="h-6 w-6 md:h-8 md:w-8 p-0">
+                    <MoreVertical size={14} className="md:size-16" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => startEditing(message || "", id)}>
-                    <Edit className="mr-2 h-4 w-4" />
+                <DropdownMenuContent align="end" className="dark:bg-gray-800 dark:text-gray-200">
+                  <DropdownMenuItem onClick={() => startEditing(message || "", id)}
+                    className="text-xs md:text-sm dark:hover:bg-gray-700">
+                    <Edit className="mr-2 h-3 w-3 md:h-4 md:w-4" />
                     Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem 
-                    className="text-red-500" 
+                    className="text-red-500 dark:text-red-400 text-xs md:text-sm dark:hover:bg-gray-700" 
                     onClick={() => deleteMessage(id)}
                   >
-                    <Trash2 className="mr-2 h-4 w-4" />
+                    <Trash2 className="mr-2 h-3 w-3 md:h-4 md:w-4" />
                     Delete
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -126,7 +133,6 @@ export default function Message({
     </div>
   );
 }
-
 
 function getInitials(name: string): string {
   return name
