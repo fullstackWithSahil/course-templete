@@ -9,7 +9,7 @@ import { Module } from "./Context";
 
 export default function Content({ blocks }: { blocks: Module[] }) {
   return (
-    <div className="w-full md:w-1/3">
+    <div className="w-full lg:w-1/3">
       <Accordion type="single" collapsible>
         {blocks.map((block, i) => (
           <AccordionItem key={block.id} value={`item-${i}`}>

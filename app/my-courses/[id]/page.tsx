@@ -3,6 +3,7 @@ import { supabaseClient } from "@/lib/server/Supabase";
 import ContextProvider, { Module, Video as VideoType } from "./Context";
 import Content from "./Content";
 import VideoPlayer from "./Videoplayer";
+import Comments from "./Comments";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -52,6 +53,9 @@ export default async function Page({ params }: PageProps) {
                     <VideoPlayer/>
                     <Content blocks={blocks}/>
                 </section>
+                <div className="lg:hidden">
+                    <Comments/>              
+                </div>
             </main>
         </ContextProvider>
     );
