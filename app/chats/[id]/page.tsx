@@ -75,7 +75,7 @@ export default function Page() {
     return () => {
       channel.unsubscribe();
     };
-  }, [params.id,addMessage, updateMessage, deleteMessage, session, supabase]);
+  }, [params.id]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
