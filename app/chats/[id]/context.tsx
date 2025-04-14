@@ -3,7 +3,7 @@
 import { Dispatch, ReactNode, createContext, useContext, useReducer } from "react";
 
 // All the types for the context
-type MessageType = {
+export type MessageType = {
   id: number;
   message: string | null;
   sender: string | null;

@@ -21,7 +21,7 @@ export default function Message({
   id,
   created_at,
 }:{
-  isUserMessage:any;
+  isUserMessage:any;// eslint-disable-line @typescript-eslint/no-explicit-any
   profile:string|null;
   firstname:string;
   message:string;
@@ -106,7 +106,7 @@ export default function Message({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="h-6 w-6 md:h-8 md:w-8 p-0">
-                    <MoreVertical size={14} className="md:size-16" />
+                    <MoreVertical size={5} className="md:size-16" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="dark:bg-gray-800 dark:text-gray-200">

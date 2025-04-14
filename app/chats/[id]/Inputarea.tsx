@@ -7,8 +7,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession, useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import supabaseClient from "@/lib/Supabase";
+import { useParams } from "next/navigation";
 
 export default function Inputarea() {
+  const params = useParams();
   const { user } = useUser();
   const [newMessage, setNewMessage] = useState("");
 
@@ -23,10 +25,10 @@ export default function Inputarea() {
         to: process.env.NEXT_PUBLIC_TEACHER!,
         firstname: user.firstName || user.username || "User",
         profile: user.imageUrl || null,
-        course: 97,
-        group: false,
+        course: Number(params.id),
+        group: true,
       };
-      const res = await supabase.from("messages").insert(Message);
+      await supabase.from("messages").insert(Message);
       setNewMessage("");
     }
   }

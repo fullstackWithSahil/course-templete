@@ -1,10 +1,10 @@
 "use server";
 
-import { createClient } from "@/lib/server/Supabase";
+import { supabaseClient } from "@/lib/server/Supabase";
 
 export async function getOldMessages(){
     try {
-        const supabase = await createClient();
+        const supabase = supabaseClient();
         const {data} = await supabase
             .from("messages")
             .select("*")
@@ -20,7 +20,7 @@ export async function getOldMessages(){
 
 export async function getOldGroupMessages(courseId:number){
     try {
-        const supabase = await createClient();
+        const supabase = supabaseClient();
         const {data} = await supabase
             .from("messages")
             .select("*")

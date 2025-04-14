@@ -16,7 +16,7 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
   const [duration, setDuration] = useState(0);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const playerRef = useRef<any | null>(null);
+  const playerRef = useRef<any | null>(null);// eslint-disable-line @typescript-eslint/no-explicit-any
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [showControls, setShowControls] = useState(true);
   const [lastTouchTime, setLastTouchTime] = useState(0);
@@ -159,7 +159,7 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
       if (isFullScreen) {
         try {
           if (window.screen.orientation) {
-            (window.screen.orientation as any).lock("landscape");
+            (window.screen.orientation as any).lock("landscape");// eslint-disable-line @typescript-eslint/no-explicit-any
           }
         } catch (err) {
           console.error("Failed to lock orientation:", err);

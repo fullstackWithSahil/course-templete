@@ -9,18 +9,18 @@ export default function Comments() {
     console.log(user?.imageUrl)
     const comments = [
         {comment:"hi there",url},
-        {comment:"hi there",url},
-        {comment:"hi there",url},
-        {comment:"hi there",url},
-        {comment:"hi there",url},
-        {comment:"hi there",url},
-        {comment:"hi there",url},
-        {comment:"hi there",url},
-        {comment:"hi there",url},
-        {comment:"hi there",url},
-        {comment:"hi there",url},
-        {comment:"hi there",url},
-        {comment:"hi there",url},
+        {comment:"hi here",url},
+        {comment:"hi tere",url},
+        {comment:"hi thre",url},
+        {comment:"hi thee",url},
+        {comment:"hi ther",url},
+        {comment:"hi athere",url},
+        {comment:"hi tbhere",url},
+        {comment:"hi thcere",url},
+        {comment:"hi thedre",url},
+        {comment:"hi theree",url},
+        {comment:"hi theref",url},
+        {comment:"hi thereg",url},
     ]
   return (
     <div>
@@ -33,7 +33,7 @@ export default function Comments() {
             <Input placeholder="add a comment"/>
         </div>
         <div>
-            {comments.map((comment)=><div className="flex items-center gap-2 m-3 border-2 border-black dark:border-white dark:bg-gray-800 p-2 rounded-sm">
+            {comments.map((comment)=><div key={comment.comment} className="flex items-center gap-2 m-3 border-2 border-black dark:border-white dark:bg-gray-800 p-2 rounded-sm">
                 <Avatar>
                     <AvatarImage src={comment.url} alt="@shadcn" />
                     <AvatarFallback>CN</AvatarFallback>

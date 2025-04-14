@@ -1,10 +1,24 @@
-import { supabaseClient } from '@/lib/server/Supabase';
+"usec lient"
+import supabaseClient  from '@/lib/Supabase';
 import { Comment } from './Comment';
+import { useSession } from '@clerk/nextjs';
+import { useEffect, useState } from 'react';
 
 
-export default async function Oldcomments({video}:{video:number}) {
-    const supabase = supabaseClient();
-    const {data} = await supabase.from("comments").select("*").eq("video",video);
+export default function Oldcomments({video}:{video:number}) {
+    const {session} =  useSession();
+    const supabase = supabaseClient(session);
+    const [data,setData] = useState<any>([]);// eslint-disable-line @typescript-eslint/no-explicit-any
+
+    useEffect(()=>{
+      supabase.from("comments").select("*").eq("video",video).then(({data,error})=>{
+        if(error){
+          console.error("Error fetching comments:",error);
+        }else{
+          setData(data);
+        }
+      });
+    },[])
     
   return (
     <div>
