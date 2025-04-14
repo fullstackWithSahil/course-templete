@@ -12,6 +12,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Edit, MoreVertical, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import supabaseClient from "@/lib/Supabase";
+import { useSession } from "@clerk/nextjs";
 
 export default function Message({
   isUserMessage,
@@ -28,15 +31,40 @@ export default function Message({
   id:number;
   created_at:string;
 }) {
-  const { deleteMessage, updateMessage } = useMessageActions();  
+  const { session } = useSession();
+  const { updateMessage } = useMessageActions();  
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
+
+  async function deleteMessage(id: number) {
+    try {
+      const supabase = supabaseClient(session);
+      const {error} = await supabase.from("messages").delete().eq("id", id);
+      if (error) {
+        console.log(error);
+        toast.error("Failed to delete message.");
+      }
+    } catch (error) {
+      toast.error("Failed to delete message.");
+      console.log(error);
+    }
+  }
   
-  const handleEdit = (id: number) => {
+  const handleEdit = async(id: number) => {
     if (editText.trim()) {
-      updateMessage(id, { message: editText });
-      setEditingId(null);
-      setEditText("");
+      try {
+        updateMessage(id, { message: editText });
+        const supabase = supabaseClient(session);
+        const {error} = await supabase.from("messages").update({message: editText}).eq("id", id);
+        if (error) {
+          console.log(error);
+          toast.error("Failed to update message.");
+        }
+        setEditingId(null);
+        setEditText("");
+      } catch (error) {
+        toast.error("Failed to update message.");
+      }
     }
   };
 
@@ -106,7 +134,7 @@ export default function Message({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="h-6 w-6 md:h-8 md:w-8 p-0">
-                    <MoreVertical size={5} className="md:size-16" />
+                  <MoreVertical className="h-4 w-4 md:h-5 md:w-5" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="dark:bg-gray-800 dark:text-gray-200">
