@@ -2,7 +2,7 @@
 import { supabaseClient } from "@/lib/server/Supabase";
 import ContextProvider, { Module, Video as VideoType } from "./Context";
 import Content from "./Content";
-import VideoPlayer from "./Videoplayer";
+import VideoPlayer from "./VideoPlayer";
 import Comments from "./Comments";
 
 interface PageProps {
