@@ -18,7 +18,8 @@ export type MessageType = {
 type ActionType = 
   | { type: "ADD_MESSAGE"; payload: MessageType }
   | { type: "DELETE_MESSAGE"; payload: { id: number } }
-  | { type: "UPDATE_MESSAGE"; payload: { id: number; updates: Partial<MessageType> } };
+  | { type: "UPDATE_MESSAGE"; payload: { id: number; updates: Partial<MessageType> } }
+  | { type: "CLEAR_MESSAGES" };
 
 type StateType = MessageType[];
 
@@ -43,6 +44,9 @@ function reducer(state: StateType, action: ActionType): StateType {
           ? { ...message, ...action.payload.updates }
           : message
       );
+
+    case "CLEAR_MESSAGES":
+      return [];
     
     default:
       return state;
@@ -80,10 +84,15 @@ export function useMessageActions() {
   const updateMessage = (id: number, updates: Partial<MessageType>) => {
     dispatch({ type: "UPDATE_MESSAGE", payload: { id, updates } });
   };
+
+  const clearMessages = () => {
+    dispatch({ type: "CLEAR_MESSAGES" });
+  };
   
   return {
     addMessage,
     deleteMessage,
-    updateMessage
+    updateMessage,
+    clearMessages
   };
 }

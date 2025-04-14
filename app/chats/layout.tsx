@@ -1,3 +1,4 @@
+//layout.tsx
 import NoCourses from "@/components/NoCourses";
 import { clerkClient, currentUser } from "@clerk/nextjs/server";
 import { ReactNode } from "react";
