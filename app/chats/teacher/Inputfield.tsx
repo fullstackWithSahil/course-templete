@@ -6,7 +6,6 @@ import supabaseClient from "@/lib/Supabase";
 import { useUser } from "@clerk/clerk-react";
 import { useSession } from "@clerk/nextjs";
 import { Send } from "lucide-react";
-import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -15,7 +14,6 @@ export default function Inputfield() {
     const {user} = useUser()
     const [message,setMessage] = useState("");
     const [loading,setLoading]= useState(false);
-    const {id} = useParams();
 
     async function handleSend(){
         try {
@@ -27,7 +25,7 @@ export default function Inputfield() {
                 sender:user?.id,
                 to:process.env.NEXT_PUBLIC_TEACHER,
                 group:false,
-                course:104,
+                course:Number(process.env.NEXT_PUBLIC_DUMMY_COURSE!),
                 profile:user?.imageUrl,
                 firstname:user?.firstName || user?.username || "User",
             })

@@ -23,7 +23,7 @@ type ActionType =
 
 type StateType = MessageType[];
 
-const Messages = createContext<{ 
+export const Messages = createContext<{ 
   state: StateType; 
   dispatch: Dispatch<ActionType>;
 } | null>(null);

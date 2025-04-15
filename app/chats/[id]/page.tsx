@@ -5,7 +5,7 @@ import { useSession } from "@clerk/nextjs";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import MessagesProvider, { useMessageActions } from "./context";
+import  { useMessageActions } from "./context";
 import Inputfield from "./Inputfield";
 import Messagebubble from "./Messagebubble";
 
@@ -42,11 +42,9 @@ export default function page() {
 	}, [id]);
 
 	return (
-		<MessagesProvider>
-			<div className="w-full h-full">
-				<Messagebubble/>
-				<Inputfield/>
-			</div>
-		</MessagesProvider>
+		<div className="w-full h-full">
+			<Messagebubble/>
+			<Inputfield/>
+		</div>
 	);
 }

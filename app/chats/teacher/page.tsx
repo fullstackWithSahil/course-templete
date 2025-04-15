@@ -4,14 +4,13 @@ import supabaseClient from "@/lib/Supabase";
 import { useSession } from "@clerk/nextjs";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import MessagesProvider, { useMessageActions } from "./context";
+import { useMessageActions } from "./context";
 import Inputfield from "./Inputfield";
-import Messagebubble from ".//Messagebubble";
+import Messagebubble from "./Messagebubble";
 
 export default function page() {
 	const { session } = useSession();
-  if (!session) return null;
-
+    if (!session) return null;
 	const { addMessage,clearMessages } = useMessageActions();
 	useEffect(() => {
 		clearMessages();
@@ -41,11 +40,9 @@ export default function page() {
 	}, []);
 
 	return (
-		<MessagesProvider>
-			<div className="w-full h-full">
-				<Messagebubble/>
-				<Inputfield/>
-			</div>
-		</MessagesProvider>
+		<div className="w-full h-full">
+			<Messagebubble/>
+			<Inputfield/>
+		</div>
 	);
 }

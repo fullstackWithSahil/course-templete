@@ -1,20 +1,29 @@
 "use client";
 
 import { useSession } from "@clerk/nextjs";
-import { MessageType, useMessageActions, useMessages } from "./context";
-import Message from "../Message";
-import { useEffect, useRef } from "react";
+import { Messages, MessageType, useMessageActions, useMessages } from "./context";
+import Message from "./Message";
+import { useContext, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import supabaseClient from "@/lib/Supabase";
 
 export default function Messagebubble() {
     const {id} = useParams();
-	const { state } = useMessages();
+	const {state} = useMessages();
+    const data = useContext(Messages);
+    console.log({data})
     const {session} = useSession();
-    const messagesEndRef = useRef<HTMLDivElement>(null);
     
     if(!session) return null;
     const {addMessage,updateMessage,deleteMessage} = useMessageActions();
+    
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+    useEffect(()=>{
+        console.log(state.length)
+        setTimeout(() => {
+            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+    },[state.length]);
 
     useEffect(()=>{
         const supabase = supabaseClient(session);
@@ -22,7 +31,7 @@ export default function Messagebubble() {
         const channels = supabase.channel('custom-all-channel')
         .on(
             'postgres_changes',
-            { event: '*', schema: 'public', table: 'messages' },
+            { event: '*', schema: 'public', table: 'messages',filter:`course=eq.${id}` },
             (payload) => {
                 if(payload.eventType==="INSERT"){
                     addMessage(payload.new as MessageType)
@@ -54,6 +63,7 @@ export default function Messagebubble() {
 					message={message.message || ""}
 				/>
 			))}
+            <div ref={messagesEndRef}></div>
 		</div>
 	);
 }
