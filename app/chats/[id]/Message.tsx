@@ -7,7 +7,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
-import { useMessageActions } from "./context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,6 +14,7 @@ import { Edit, MoreVertical, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import supabaseClient from "@/lib/Supabase";
 import { useSession } from "@clerk/nextjs";
+import { useMessageActions } from "./context";
 
 export default function Message({
   isUserMessage,
@@ -24,47 +24,23 @@ export default function Message({
   id,
   created_at,
 }:{
-  isUserMessage:any;// eslint-disable-line @typescript-eslint/no-explicit-any
+  isUserMessage:boolean;
   profile:string|null;
   firstname:string;
   message:string;
   id:number;
   created_at:string;
 }) {
-  const { session } = useSession();
-  const { updateMessage } = useMessageActions();  
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
 
   async function deleteMessage(id: number) {
-    try {
-      const supabase = supabaseClient(session);
-      const {error} = await supabase.from("messages").delete().eq("id", id);
-      if (error) {
-        console.log(error);
-        toast.error("Failed to delete message.");
-      }
-    } catch (error) {
-      toast.error("Failed to delete message.");
-      console.log(error);
-    }
   }
   
   const handleEdit = async(id: number) => {
     if (editText.trim()) {
-      try {
-        updateMessage(id, { message: editText });
-        const supabase = supabaseClient(session);
-        const {error} = await supabase.from("messages").update({message: editText}).eq("id", id);
-        if (error) {
-          console.log(error);
-          toast.error("Failed to update message.");
-        }
         setEditingId(null);
         setEditText("");
-      } catch (error) {
-        toast.error("Failed to update message.");
-      }
     }
   };
 
@@ -75,7 +51,7 @@ export default function Message({
   
   return (
     <div 
-      className={`flex items-start gap-2 md:gap-3 ${isUserMessage ? "flex-row-reverse" : "flex-row"}`}
+      className={`my-2 flex items-start gap-2 md:gap-3 ${isUserMessage ? "flex-row-reverse" : "flex-row"}`}
     >
       <div className="relative w-full sm:max-w-[85%] md:max-w-[75%]">        
         {/* Message bubble */}
@@ -99,14 +75,14 @@ export default function Message({
                 onChange={(e) => setEditText(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleEdit(id)}
                 autoFocus
-                className="bg-white dark:bg-gray-800 text-sm md:text-base"
+                className="bg-white dark:bg-gray-800 text-sm md:text-base text-black dark:text-white"
               />
               <div className="flex justify-end gap-2">
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={() => setEditingId(null)}
-                  className="text-xs md:text-sm h-7 md:h-8"
+                  className="text-xs md:text-sm h-7 md:h-8 bg-gray-600"
                 >
                   Cancel
                 </Button>
