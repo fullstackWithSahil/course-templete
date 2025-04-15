@@ -2,17 +2,16 @@
 
 import supabaseClient from "@/lib/Supabase";
 import { useSession } from "@clerk/nextjs";
-import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import MessagesProvider, { useMessageActions } from "./context";
 import Inputfield from "./Inputfield";
-import Messagebubble from "./Messagebubble";
+import Messagebubble from ".//Messagebubble";
 
 export default function page() {
 	const { session } = useSession();
-    if (!session) return null;
-	const { id } = useParams();
+  if (!session) return null;
+
 	const { addMessage,clearMessages } = useMessageActions();
 	useEffect(() => {
 		clearMessages();
@@ -21,7 +20,7 @@ export default function page() {
 			const { data, error } = await supabase
 				.from("messages")
 				.select("*")
-				.eq("course", Number(id))
+				.eq("course",104)
 				.order("created_at", { ascending: true });
 			if (error) {
 				return { data: null, error };
@@ -39,7 +38,7 @@ export default function page() {
 				});
 			}
 		});
-	}, [id]);
+	}, []);
 
 	return (
 		<MessagesProvider>

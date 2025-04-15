@@ -4,11 +4,9 @@ import { useSession } from "@clerk/nextjs";
 import { MessageType, useMessageActions, useMessages } from "./context";
 import Message from "../Message";
 import { useEffect, useRef } from "react";
-import { useParams } from "next/navigation";
 import supabaseClient from "@/lib/Supabase";
 
 export default function Messagebubble() {
-    const {id} = useParams();
 	const { state } = useMessages();
     const {session} = useSession();
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -39,7 +37,7 @@ export default function Messagebubble() {
             }
         )
         .subscribe()
-    },[id]);
+    },[]);
 
 	return (
 		<div className="h-[80%] overflow-y-scroll">
