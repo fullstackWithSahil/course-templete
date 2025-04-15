@@ -11,10 +11,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Edit, MoreVertical, Trash2 } from "lucide-react";
+import { useSession } from "@clerk/nextjs";
 import { toast } from "sonner";
 import supabaseClient from "@/lib/Supabase";
-import { useSession } from "@clerk/nextjs";
-import { useMessageActions } from "./context";
 
 export default function Message({
   isUserMessage,
@@ -33,14 +32,42 @@ export default function Message({
 }) {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
+  const {session} = useSession();
 
   async function deleteMessage(id: number) {
+    try {
+      const supabase = supabaseClient(session);
+      const {error} = await supabase.from("messages").delete().eq("id",id);
+      if(error){
+        toast.error("There was an error deleting the message");
+        console.log({error})
+      }
+    } catch (error) {
+      console.log({error})
+      toast.error("There was an error deleting the message");
+    }
   }
   
   const handleEdit = async(id: number) => {
-    if (editText.trim()) {
+    try {
+      
+      if (editText.trim()) {
         setEditingId(null);
         setEditText("");
+        const supabase = supabaseClient(session);
+
+        const { error } = await supabase
+          .from('messages')
+          .update({message: editText})
+          .eq('id',id)
+        if(error){
+          toast.error("There was an error updating the message");
+          console.log({error})
+        }
+      }
+    } catch (error) {
+      console.log({error})
+      toast.error("There was an error updating the message");
     }
   };
 

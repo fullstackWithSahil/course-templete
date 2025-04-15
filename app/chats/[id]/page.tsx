@@ -5,10 +5,7 @@ import { useSession } from "@clerk/nextjs";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { useMessageActions, useMessages } from "./context";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Message from "./Message";
-import { Input } from "@/components/ui/input";
+import { useMessageActions } from "./context";
 import Inputfield from "./Inputfield";
 import Messagebubble from "./Messagebubble";
 
@@ -16,8 +13,9 @@ export default function page() {
 	const { session } = useSession();
     if (!session) return null;
 	const { id } = useParams();
-	const { addMessage } = useMessageActions();
+	const { addMessage,clearMessages } = useMessageActions();
 	useEffect(() => {
+		clearMessages();
 		const supabase = supabaseClient(session);
 		const fetchMessages = async () => {
 			const { data, error } = await supabase
@@ -49,12 +47,4 @@ export default function page() {
 			<Inputfield/>
 		</div>
 	);
-}
-
-function getInitials(name: string): string {
-	return name
-		.split(" ")
-		.map((part) => part[0])
-		.join("")
-		.toUpperCase();
 }
