@@ -51,7 +51,7 @@ export default function Messagebubble() {
     },[id]);
 
 	return (
-		<div className="h-[80%] overflow-y-scroll">
+		<div className="h-[75%] overflow-y-scroll mx-2">
 			{state.map((message) => (
 				<Message
 					key={message.id}

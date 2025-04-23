@@ -29,7 +29,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
 
 	return (
 		<main className="px-2 sm:px-4 mt-14 relative top-0 left-0">
-			<section className="absolute top-0 left-0 hidden sm:flex sm:w-[50%] md:w-[33%] lg:w-[25%] h-32 sm:h-64 md:h-96 rounded-b-3xl z-0 transition-colors duration-200 flex-col items-center gap-3 mt-12">
+			<section className="absolute top-0 left-0 hidden sm:flex sm:w-[50%] md:w-[33%] lg:w-[25%] rounded-b-3xl z-0 transition-colors duration-200 flex-col items-center gap-3 mt-12">
 				{courses?.map((course) => (
 					<Link
 						href={`/chats/${course.id}`}
@@ -46,8 +46,8 @@ export default async function Layout({ children }: { children: ReactNode }) {
 					Teacher
 				</Link>
 			</section>
-			<section className="absolute top-0 left-0 sm:left-[50%] md:left-[33%] lg:left-[25%] h-screen w-full sm:w-[50%] md:w-[67%] lg:w-[75%] transition-all duration-200">
-        <MobileSidebar courses={courses}/>
+			<section className="absolute top-0 left-0 sm:left-[50%] md:left-[33%] lg:left-[25%] w-full sm:w-[50%] md:w-[67%] lg:w-[75%] transition-all duration-200 h-[calc(100vh-50px)]">
+        		<MobileSidebar courses={courses}/>
 				{children}
 			</section>
 		</main>

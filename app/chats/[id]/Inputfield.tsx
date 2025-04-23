@@ -19,6 +19,7 @@ export default function Inputfield() {
 
     async function handleSend(){
         try {
+            if(!message.trim())return;
             if(loading) return;
             setLoading(true);
             const supabase = supabaseClient(session);
