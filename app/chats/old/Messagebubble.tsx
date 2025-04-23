@@ -25,8 +25,33 @@ export default function Messagebubble() {
         }, 100);
     },[state.length]);
 
+    useEffect(()=>{
+        const supabase = supabaseClient(session);
+        
+        const channels = supabase.channel('custom-all-channel')
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'messages',filter:`course=eq.${id}` },
+            (payload) => {
+                if(payload.eventType==="INSERT"){
+                    addMessage(payload.new as MessageType)
+                    setTimeout(() => {
+                        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+                    }, 100);
+                }else if(payload.eventType==="DELETE"){
+                    console.log(payload)
+                    deleteMessage(payload.old.id);
+                }else if(payload.eventType==="UPDATE"){
+                    console.log(payload)
+                    updateMessage(Number(payload.old.id),{message:payload.new.message});
+                }
+            }
+        )
+        .subscribe()
+    },[id]);
+
 	return (
-		<div className="h-[75vh] overflow-y-scroll mx-2">
+		<div className="h-[75%] overflow-y-scroll mx-2">
 			{state.map((message) => (
 				<Message
 					key={message.id}

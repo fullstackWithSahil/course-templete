@@ -2,14 +2,16 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import supabaseClient from "@/lib/Supabase";
 import { useUser } from "@clerk/clerk-react";
-import axios from "axios";
+import { useSession } from "@clerk/nextjs";
 import { Send } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export default function Inputfield() {
+    const {session} = useSession();
     const {user} = useUser()
     const [message,setMessage] = useState("");
     const [loading,setLoading]= useState(false);
@@ -20,7 +22,8 @@ export default function Inputfield() {
             if(!message.trim())return;
             if(loading) return;
             setLoading(true);
-            const newMessage ={
+            const supabase = supabaseClient(session);
+            const {error} = await supabase.from("messages").insert({
                 message,
                 sender:user?.id,
                 to:process.env.NEXT_PUBLIC_TEACHER,
@@ -28,15 +31,13 @@ export default function Inputfield() {
                 course:Number(id),
                 profile:user?.imageUrl,
                 firstname:user?.firstName || user?.username || "User",
-            }
-            const {data} = await axios.post("http://localhost:8080/api/messages/addmessage",newMessage);
-            if(data.error){
-                toast.error("There was an error sending the message");
-                setLoading(false);
-                return;
-            }
+            })
             setLoading(false);
             setMessage("");
+            if(error){
+                toast.error("There was an error sending the message");
+                return;
+            }
         } catch (error) {
             toast.error("There was an error sending the message");
             setLoading(false);

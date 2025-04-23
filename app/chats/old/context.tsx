@@ -4,7 +4,7 @@ import { Dispatch, ReactNode, createContext, useContext, useReducer } from "reac
 
 // All the types for the context
 export type MessageType = {
-  id: string;
+  id: number;
   message: string | null;
   sender: string | null;
   to: string | null;
@@ -17,8 +17,8 @@ export type MessageType = {
 
 type ActionType = 
   | { type: "ADD_MESSAGE"; payload: MessageType }
-  | { type: "DELETE_MESSAGE"; payload: { id: string } }
-  | { type: "UPDATE_MESSAGE"; payload: { id: string; updates: Partial<MessageType> } }
+  | { type: "DELETE_MESSAGE"; payload: { id: number } }
+  | { type: "UPDATE_MESSAGE"; payload: { id: number; updates: Partial<MessageType> } }
   | { type: "CLEAR_MESSAGES" };
 
 type StateType = MessageType[];
@@ -77,11 +77,11 @@ export function useMessageActions() {
     dispatch({ type: "ADD_MESSAGE", payload: message });
   };
   
-  const deleteMessage = (id: string) => {
+  const deleteMessage = (id: number) => {
     dispatch({ type: "DELETE_MESSAGE", payload: { id } });
   };
   
-  const updateMessage = (id: string, updates: Partial<MessageType>) => {
+  const updateMessage = (id: number, updates: Partial<MessageType>) => {
     dispatch({ type: "UPDATE_MESSAGE", payload: { id, updates } });
   };
 
