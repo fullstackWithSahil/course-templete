@@ -8,12 +8,14 @@ import { Send } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useSocket } from "./SocketContext";
 
 export default function Inputfield() {
     const {user} = useUser()
     const [message,setMessage] = useState("");
     const [loading,setLoading]= useState(false);
     const {id} = useParams();
+    const socket = useSocket();
 
     async function handleSend(){
         try {
@@ -29,6 +31,7 @@ export default function Inputfield() {
                 profile:user?.imageUrl,
                 firstname:user?.firstName || user?.username || "User",
             }
+            socket.emit("sendMessage",newMessage);
             const {data} = await axios.post("http://localhost:8080/api/messages/addmessage",newMessage);
             if(data.error){
                 toast.error("There was an error sending the message");

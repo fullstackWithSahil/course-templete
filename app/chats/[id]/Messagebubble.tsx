@@ -1,21 +1,37 @@
 "use client";
 
 import { useSession } from "@clerk/nextjs";
-import { Messages, MessageType, useMessageActions, useMessages } from "./context";
+import { useMessageActions, useMessages } from "./context";
 import Message from "./Message";
-import { useContext, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
-import supabaseClient from "@/lib/Supabase";
+import { useSocket } from "./SocketContext";
 
 export default function Messagebubble() {
     const {id} = useParams();
 	const {state} = useMessages();
-    const data = useContext(Messages);
-    console.log({data})
     const {session} = useSession();
     
     if(!session) return null;
     const {addMessage,updateMessage,deleteMessage} = useMessageActions();
+	const socket = useSocket();
+	useEffect(()=>{
+		socket.on("receiveMessage",(message)=>{
+			addMessage({
+				...message,
+				created_at:"11/22/2023",
+			})
+		});
+
+		socket.on("receiveEditMessage",(message)=>{
+			updateMessage(message.id,message);
+		});
+		
+		socket.on("receiveDeleteMessage",(id)=>{
+			console.log(id);
+			deleteMessage(id);
+		});
+	},[id]);
     
     const messagesEndRef = useRef<HTMLDivElement>(null);
     useEffect(()=>{

@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Edit, MoreVertical, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
+import { useSocket } from "./SocketContext";
 
 export default function Message({
 	isUserMessage,
@@ -29,11 +30,13 @@ export default function Message({
 	id: string;
 	created_at: string;
 }) {
+	const socket = useSocket();
 	const [editingId, setEditingId] = useState<string| null>(null);
 	const [editText, setEditText] = useState("");
 
 	async function deleteMessage(id: string) {
 		try {
+			socket.emit("deleteMessage", id);
 			const { data } = await axios.delete(
 				"http://localhost:8080/api/messages/deletemessage",
 				{ data: { id: id } }
@@ -51,12 +54,13 @@ export default function Message({
 	const handleEdit = async (id: string) => {
 		try {
 			if (editText.trim()) {
+				socket.emit("editMessage", { id: id, message: editText });
 				setEditingId(null);
+				const { data } = await axios.patch(
+					"http://localhost:8080/api/messages/editmessage",
+					{ id: id, message: editText }
+				);
 				setEditText("");
-        const { data } = await axios.patch(
-          "http://localhost:8080/api/messages/editmessage",
-          { id: id, message: editText }
-        );
 				if (data.error) {
 					toast.error("There was an error updating the message");
 					console.log({ error:data.error });
