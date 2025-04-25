@@ -1,46 +1,34 @@
 "use client";
 
-import supabaseClient from "@/lib/Supabase";
 import { useSession } from "@clerk/nextjs";
 import { useEffect } from "react";
-import { toast } from "sonner";
-import { useMessageActions } from "./context";
+import  { MessageType, useMessageActions } from "./context";
 import Inputfield from "./Inputfield";
 import Messagebubble from "./Messagebubble";
+import axios from "axios";
+import { toast } from "sonner";
+
 
 export default function page() {
 	const { session } = useSession();
     if (!session) return null;
 	const { addMessage,clearMessages } = useMessageActions();
+	
 	useEffect(() => {
 		clearMessages();
-		const supabase = supabaseClient(session);
-		const fetchMessages = async () => {
-			const { data, error } = await supabase
-				.from("messages")
-				.select("*")
-				.eq("course",104)
-				.order("created_at", { ascending: true });
-			if (error) {
-				return { data: null, error };
-			} else {
-				return { data, error: null };
-			}
-		};
-		fetchMessages().then((data) => {
-			if (data.error) {
-				toast.error("Error fetching messages");
-				return;
-			} else {
-				data.data.forEach((message) => {
+		axios.get(`http://localhost:8080/api/messages/getMessages?chat=${process.env.NEXT_PUBLIC_TEACHER}`)
+			.then(({data})=>{
+				data.forEach((message:MessageType) => {
 					addMessage(message);
 				});
-			}
-		});
-	}, []);
+			}).catch((error)=>{
+				console.log(error)
+				toast.error("Error fetching messages");
+			})
+	},[]);
 
 	return (
-		<div className="w-full h-full">
+		<div className="w-full">
 			<Messagebubble/>
 			<Inputfield/>
 		</div>

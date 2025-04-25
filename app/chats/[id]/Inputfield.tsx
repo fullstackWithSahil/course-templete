@@ -9,6 +9,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useSocket } from "./SocketContext";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function Inputfield() {
     const {user} = useUser()
@@ -22,16 +23,19 @@ export default function Inputfield() {
             if(!message.trim())return;
             if(loading) return;
             setLoading(true);
+            const uuid = uuidv4();
+            
             const newMessage ={
+                id:uuid,
                 message,
                 sender:user?.id,
-                to:process.env.NEXT_PUBLIC_TEACHER,
-                group:true,
                 course:Number(id),
                 profile:user?.imageUrl,
+                group:true,
                 firstname:user?.firstName || user?.username || "User",
             }
-            socket.emit("sendMessage",newMessage);
+            console.log(newMessage)
+            socket.emit("sendMessage",{...newMessage,room:id});
             const {data} = await axios.post("http://localhost:8080/api/messages/addmessage",newMessage);
             if(data.error){
                 toast.error("There was an error sending the message");

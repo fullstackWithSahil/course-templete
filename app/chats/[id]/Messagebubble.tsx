@@ -24,6 +24,7 @@ export default function Messagebubble() {
 		});
 
 		socket.on("receiveEditMessage",(message)=>{
+			console.log(message);
 			updateMessage(message.id,message);
 		});
 		

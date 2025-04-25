@@ -14,6 +14,7 @@ import { Edit, MoreVertical, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 import { useSocket } from "./SocketContext";
+import { useParams } from "next/navigation";
 
 export default function Message({
 	isUserMessage,
@@ -31,12 +32,13 @@ export default function Message({
 	created_at: string;
 }) {
 	const socket = useSocket();
+	const param = useParams();
 	const [editingId, setEditingId] = useState<string| null>(null);
 	const [editText, setEditText] = useState("");
 
 	async function deleteMessage(id: string) {
 		try {
-			socket.emit("deleteMessage", id);
+			socket.emit("deleteMessage", {id,room:param.id});
 			const { data } = await axios.delete(
 				"http://localhost:8080/api/messages/deletemessage",
 				{ data: { id: id } }
@@ -54,7 +56,7 @@ export default function Message({
 	const handleEdit = async (id: string) => {
 		try {
 			if (editText.trim()) {
-				socket.emit("editMessage", { id: id, message: editText });
+				socket.emit("editMessage", { id, message: editText,room:param.id });
 				setEditingId(null);
 				const { data } = await axios.patch(
 					"http://localhost:8080/api/messages/editmessage",

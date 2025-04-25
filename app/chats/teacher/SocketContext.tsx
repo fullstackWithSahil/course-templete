@@ -11,7 +11,7 @@ export default function SocketProvider({ children }: { children: React.ReactNode
     useEffect(()=>{
         const _socket = io("http://localhost:8080");
         setSocket(_socket);
-        _socket.emit('joinRoom',id);
+        _socket.emit('joinRoom',process.env.NEXT_PUBLIC_TEACHER);
         return()=>{
             _socket.disconnect();
         }
