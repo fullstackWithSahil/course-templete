@@ -2,42 +2,48 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import supabaseClient from "@/lib/Supabase";
 import { useUser } from "@clerk/clerk-react";
-import { useSession } from "@clerk/nextjs";
+import axios from "axios";
 import { Send } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useSocket } from "./SocketContext";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function Inputfield() {
-    const {session} = useSession();
     const {user} = useUser()
     const [message,setMessage] = useState("");
     const [loading,setLoading]= useState(false);
     const {id} = useParams();
+    const socket = useSocket();
 
     async function handleSend(){
         try {
             if(!message.trim())return;
             if(loading) return;
             setLoading(true);
-            const supabase = supabaseClient(session);
-            const {error} = await supabase.from("messages").insert({
+            const uuid = uuidv4();
+            
+            const newMessage ={
+                id:uuid,
                 message,
                 sender:user?.id,
-                to:process.env.NEXT_PUBLIC_TEACHER,
-                group:true,
                 course:Number(id),
                 profile:user?.imageUrl,
+                group:true,
                 firstname:user?.firstName || user?.username || "User",
-            })
-            setLoading(false);
-            setMessage("");
-            if(error){
+            }
+            console.log(newMessage)
+            socket.emit("sendMessage",{...newMessage,room:id});
+            const {data} = await axios.post("http://localhost:8080/api/messages/addmessage",newMessage);
+            if(data.error){
                 toast.error("There was an error sending the message");
+                setLoading(false);
                 return;
             }
+            setLoading(false);
+            setMessage("");
         } catch (error) {
             toast.error("There was an error sending the message");
             setLoading(false);

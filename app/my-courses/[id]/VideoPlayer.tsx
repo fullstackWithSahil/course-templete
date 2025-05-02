@@ -6,6 +6,7 @@ import Comments from "./Comments";
 
 export default function VideoPlayer() {
     const {data} = useVideoContext();
+    console.log({data:data.currentVideo})
     return (
         <div className="w-full lg:w-2/3">
             <Video src={data.currentVideo.url} disabled={data.disabled} />

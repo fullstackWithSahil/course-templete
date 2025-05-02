@@ -1,8 +1,10 @@
 "use client";
 import { useState } from "react";
+import { useVideoContext } from "./Context";
 
 export default function Description() {
   const [more, setMore] = useState(false);
+  const {data} = useVideoContext();
   return (
     <div
       className={
@@ -12,12 +14,7 @@ export default function Description() {
       }
     >
       <p className={more ? "" : "truncate"}>
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Assumenda
-        distinctio consequatur rerum iste id dignissimos dolore alias itaque
-        quidem modi, eaque culpa iusto nihil, placeat eveniet, fugit adipisci
-        accusantium recusandae veritatis autem odio. Itaque animi, corporis,
-        perferendis quae minima totam maxime maiores harum modi repellat vel.
-        Amet, nulla minima?
+        {data.currentVideo.description}
       </p>
       <p
         className={more ? "hidden" : "text-blue-400 cursor-pointer"}

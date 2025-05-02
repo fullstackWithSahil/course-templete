@@ -51,7 +51,7 @@ export default async function Page({ params }: PageProps) {
             <main className="mt-16">
                 <section className="flex flex-wrap">
                     <VideoPlayer/>
-                    <Content blocks={blocks}/>
+                    <Content blocks={blocks.reverse()}/>
                 </section>
                 <div className="lg:hidden">
                     <Comments/>              
