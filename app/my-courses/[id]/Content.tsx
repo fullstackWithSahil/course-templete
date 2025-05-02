@@ -5,9 +5,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Module } from "./Context";
+import { Module, useVideoContext } from "./Context";
 
 export default function Content({ blocks }: { blocks: Module[] }) {
+  const {setdata}=useVideoContext();
   return (
     <div className="w-full lg:w-1/3">
       <Accordion type="single" collapsible>
@@ -20,7 +21,11 @@ export default function Content({ blocks }: { blocks: Module[] }) {
             </AccordionTrigger>
             <AccordionContent>
               {block.videos.map((video, i) => (
-                <div className="flex items-center gap-2 mb-3" key={video.id}>
+                <div 
+                  key={video.id}
+                  className="flex items-center gap-2 mb-3"
+                  onClick={()=>{setdata((prev)=>({...prev,currentVideo:video}))}} 
+                >
                   <img
                     src={video.thumbnail}
                     alt={video.title}

@@ -196,7 +196,7 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
     
     // Update source with new resolution
     playerRef.current.src({
-      src: `${src}/${res}/index.m3u8`,
+      src: `${src}/${currentResolution}/index.m3u8`,
       type: "application/x-mpegURL",
     });
     
