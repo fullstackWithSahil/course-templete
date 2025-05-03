@@ -103,7 +103,6 @@ export default function Comments() {
 function CommentBlock(comment:CommentType){
     const {user} = useUser();
     const {session} = useSession();
-    console.log({liked:comment.liked_by.includes(user?.id||"")})
     const [liked,setLiked] = useState(comment.liked_by.includes(user?.id||""));
 
     async function handleLike(){
@@ -139,7 +138,8 @@ function CommentBlock(comment:CommentType){
                 </Avatar>
                 <span>{comment.comment}</span>
             </div>
-            <div className="cursor-pointer">
+            <div className="cursor-pointer flex items-center gap-2">
+                <p>{comment.liked_by.length}</p>
                 <Heart
                     onClick={handleLike} 
                     className={liked?"fill-red-500 dark:fill-white":"text-red-500 dark:text-white"}
