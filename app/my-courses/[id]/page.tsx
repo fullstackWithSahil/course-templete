@@ -45,7 +45,7 @@ export default async function Page({ params }: PageProps) {
     : [];
 
     const currentVideo = blocks[0].videos[0];
-    console.log(data);
+    
     return (
         <ContextProvider currentVideo={currentVideo}>
             <main className="mt-16">
