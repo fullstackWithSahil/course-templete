@@ -1,4 +1,3 @@
-import logo from "@/assets/logo.png";
 import Card from "@/components/CourseCard";
 import NoCourses from "@/components/NoCourses";
 import { supabaseClient } from "@/lib/server/Supabase";
@@ -21,7 +20,7 @@ export default async function Page() {
           key={course.id}
           title={course.name||""} 
           description={course.description||""} 
-          logo={logo} 
+          logo={course.thumbnail||""} 
           id={course.id}
           watch={false}
         />))}

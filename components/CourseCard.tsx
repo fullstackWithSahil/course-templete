@@ -2,9 +2,9 @@
 import { buyCourse } from "@/actions/buyCourse";
 import supabaseClient from "@/lib/Supabase";
 import { useAuth, useSession, useUser } from "@clerk/nextjs";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Button } from "./ui/button";
 
 export default function Card({
   logo,
@@ -40,8 +40,9 @@ export default function Card({
         const { data,error } = await supabase
             .from("students")
             .select("*")
-            .eq("teacher", process.env.NEXT_PUBLIC_TEACHER!)
-            .eq("student", userId);
+            .eq("student", userId)
+            .eq("course",id);
+        
         if(error){
           console.log(error);
         }
@@ -75,7 +76,7 @@ export default function Card({
       <div className="grid grid-cols-1 md:grid-cols-3">
         {/* Logo Section */}
         <div className="flex justify-center items-center bg-gray-100 dark:bg-gray-800 p-4">
-          <Image src={logo} alt="logo" className="w-full object-contain" />
+          <img src={logo} alt="logo" className="w-full object-contain" />
         </div>
 
         {/* Content Section */}
@@ -86,12 +87,14 @@ export default function Card({
           <p className="text-sm md:text-base text-center leading-relaxed">
             {description}
           </p>
-          <button
-            className="mt-4 px-6 py-2 bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-lg"
-            onClick={handelClick}
-          >
-            {watch ? "watch" :buttonText?buttonText:"buy now"}
-          </button>
+          <div className="flex items-center justify-center gap-6">
+            <Button
+              onClick={handelClick}
+            >
+              {watch ? "watch" :buttonText?buttonText:"buy now"}
+            </Button>
+            {!watch&&<Button>Read More</Button>}
+          </div>
         </div>
       </div>
     </div>

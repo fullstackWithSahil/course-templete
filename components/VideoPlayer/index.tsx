@@ -22,6 +22,19 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
   const [lastTouchTime, setLastTouchTime] = useState(0);
   const [isFullScreen,setIsFullScreen] = useState(false)
 
+  // Handle volume changes
+  useEffect(() => {
+    if (playerRef.current) {
+      playerRef.current.volume(isMuted ? 0 : volume);
+    }
+  }, [volume, isMuted]);
+
+  // Handle playback speed changes
+  useEffect(() => {
+    if (playerRef.current) {
+      playerRef.current.playbackRate(playbackSpeed);
+    }
+  }, [playbackSpeed]);
 
   // Handle mobile touch events
   const handleTouchStart = useCallback(() => {
@@ -103,7 +116,7 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
     };
   }, [inputEvents]);
 
-  // Initial player setup (rest of the setup code remains the same)
+  // Initial player setup
   useEffect(() => {
     if (!videoRef.current) return;
 
@@ -126,6 +139,9 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
 
     playerRef.current.on("loadedmetadata", () => {
       setDuration(playerRef.current.duration());
+      // Set initial volume and playback speed when metadata is loaded
+      playerRef.current.volume(volume);
+      playerRef.current.playbackRate(playbackSpeed);
     });
 
     return () => {
@@ -140,6 +156,8 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
     
     const currentTime = playerRef.current.currentTime();
     const wasPlaying = !playerRef.current.paused();
+    const currentVolume = playerRef.current.volume();
+    const currentSpeed = playerRef.current.playbackRate();
     
     playerRef.current.src({
       src: `${src}/${currentResolution}/index.m3u8`,
@@ -148,6 +166,8 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
   
     playerRef.current.one('loadedmetadata', () => {
       playerRef.current.currentTime(currentTime);
+      playerRef.current.volume(currentVolume);
+      playerRef.current.playbackRate(currentSpeed);
       if (wasPlaying) {
         playerRef.current.play();
       }
@@ -196,13 +216,15 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
     
     // Update source with new resolution
     playerRef.current.src({
-      src: `${src}/${currentResolution}/index.m3u8`,
+      src: `${src}/${res}/index.m3u8`, // Fixed: use 'res' instead of 'currentResolution'
       type: "application/x-mpegURL",
     });
     
     // When video is ready, restore time and playing state
     playerRef.current.one('loadedmetadata', () => {
       playerRef.current.currentTime(currentTime);
+      playerRef.current.volume(isMuted ? 0 : volume);
+      playerRef.current.playbackRate(playbackSpeed);
       if (wasPlaying) {
         playerRef.current.play();
       }
@@ -213,13 +235,20 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
   }
 
   function toggleMute() {
-    setIsMuted(!isMuted);
+    const newMutedState = !isMuted;
+    setIsMuted(newMutedState);
+    if (playerRef.current) {
+      playerRef.current.volume(newMutedState ? 0 : volume);
+    }
   }
 
   function handleVolumeChange(e: React.ChangeEvent<HTMLInputElement>) {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
     setIsMuted(newVolume === 0);
+    if (playerRef.current) {
+      playerRef.current.volume(newVolume);
+    }
   }
 
   function skip(seconds: number) {
@@ -238,6 +267,14 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60);
     return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+  }
+
+  function handlePlaybackSpeedChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    const newSpeed = Number(e.target.value);
+    setPlaybackSpeed(newSpeed);
+    if (playerRef.current) {
+      playerRef.current.playbackRate(newSpeed);
+    }
   }
 
   return (
@@ -284,14 +321,14 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
                 {paused ? (
                   <svg className="h-6 w-6" viewBox="0 0 24 24">
                     <path
-                      fill="currentColor"
+                      fill="white"
                       d="M8,5.14V19.14L19,12.14L8,5.14Z"
                     />
                   </svg>
                 ) : (
                   <svg className="h-6 w-6" viewBox="0 0 24 24">
                     <path
-                      fill="currentColor"
+                      fill="white"
                       d="M14,19H18V5H14M6,19H10V5H6V19Z"
                     />
                   </svg>
@@ -300,23 +337,23 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
 
               <div className="hidden sm:flex items-center space-x-2">
                 <button onClick={() => skip(-10)}>
-                  <Rewind className="h-6 w-6" />
+                  <Rewind className="h-6 w-6 fill-accent dark:fill-white" />
                 </button>
                 <button onClick={() => skip(10)}>
-                  <FastForward className="h-6 w-6" />
+                  <FastForward className="h-6 w-6 fill-accent dark:fill-white" />
                 </button>
               </div>
 
-              <span className="text-sm whitespace-nowrap">
+              <span className="text-sm whitespace-nowrap text-white">
                 {formatTime(currentTime)} / {formatTime(duration)}
               </span>
 
               <div className="hidden sm:flex items-center space-x-2">
                 <button onClick={toggleMute}>
                   {isMuted || volume === 0 ? (
-                    <VolumeX className="h-6 w-6" />
+                    <VolumeX className="h-6 w-6 fill-white text-white" />
                   ) : (
-                    <Volume2 className="h-6 w-6" />
+                    <Volume2 className="h-6 w-6 fill-white text-white" />
                   )}
                 </button>
                 <input
@@ -334,11 +371,11 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
             <div className="flex items-center space-x-2 sm:space-x-4">
               <select
                 value={playbackSpeed}
-                onChange={(e) => setPlaybackSpeed(Number(e.target.value))}
-                className="bg-transparent border-none outline-none cursor-pointer text-sm"
+                onChange={handlePlaybackSpeedChange}
+                className="cursor-pointer text-sm text-white bg-black px-5"
               >
                 {playbackSpeeds.map((speed) => (
-                  <option key={speed} value={speed} className="text-black">
+                  <option key={speed} value={speed} className="">
                     {speed}x
                   </option>
                 ))}
@@ -346,7 +383,7 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
 
               <div className="relative">
                 <button onClick={() => setShowSettings((prev) => !prev)}>
-                  <Settings className="h-6 w-6" />
+                  <Settings className="h-6 w-6 dark:fill-accent fill-white" />
                 </button>
                 {showSettings && (
                   <div className="absolute bottom-full right-0 mb-2 bg-black border border-gray-700 rounded-md p-2">
@@ -354,7 +391,7 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
                       <div
                         key={res}
                         className={`cursor-pointer px-2 py-1 ${
-                          currentResolution === res ? "text-blue-500" : ""
+                          currentResolution === res ? "text-blue-500" : "text-white"
                         }`}
                         onClick={() => changeResolution(res)}
                       >
@@ -369,14 +406,14 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
                 {isFullScreen ? (
                   <svg viewBox="0 0 24 24" className="h-6 w-6">
                     <path
-                      fill="currentColor"
+                      fill="white"
                       d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"
                     />
                   </svg>
                 ) : (
                   <svg viewBox="0 0 24 24" className="h-6 w-6">
                     <path
-                      fill="currentColor"
+                      fill="white"
                       d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"
                     />
                   </svg>
