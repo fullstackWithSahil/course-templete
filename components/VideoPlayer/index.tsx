@@ -3,8 +3,18 @@ import { Settings, Volume2, VolumeX, Rewind, FastForward } from "lucide-react";
 import { useEffect, useRef, useState, useCallback } from "react";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
+import addView from "./addView";
+import { useSession } from "@clerk/nextjs";
+import { useParams } from "next/navigation";
+import { useVideoContext } from "@/app/my-courses/[id]/Context";
 
-const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
+const Video = ({
+  src,
+  disabled,
+}:{
+  src: string,
+  disabled:boolean,
+}) => {
   const resolutions = ["1080", "720", "360", "144"];
   const playbackSpeeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
   const [paused, setPaused] = useState(true);
@@ -150,6 +160,23 @@ const Video = ({src,disabled}:{src: string,disabled:boolean}) => {
       }
     };
   }, []);
+
+  const [viewAdded, setViewAdded] = useState(false);
+  const {session} = useSession();
+  const {id} = useParams();
+  const {data} = useVideoContext();
+
+  useEffect(() => {
+    if(viewAdded || !session) return;
+    if (currentTime / duration > 0.75) {
+      setViewAdded(true);
+      addView(session,id as string,data).then(() => {
+        console.log("Video is almost finished, adding view...");
+      }).catch((error) => {
+        console.error("Error adding view:", error);
+      });
+    }
+  }, [currentTime]);
 
   useEffect(() => {
     if (!playerRef.current) return;
