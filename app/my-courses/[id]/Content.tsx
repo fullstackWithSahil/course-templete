@@ -11,7 +11,7 @@ export default function Content({ blocks }: { blocks: Module[] }) {
   const {setdata}=useVideoContext();
   return (
     <div className="w-full lg:w-1/3">
-      <Accordion type="single" collapsible>
+      <Accordion type="multiple">
         {blocks.map((block, i) => (
           <AccordionItem key={block.id} value={`item-${i}`}>
             <AccordionTrigger>
@@ -32,7 +32,7 @@ export default function Content({ blocks }: { blocks: Module[] }) {
                     className="w-1/4"
                   />
                   <h3 className="text-xl font-medium">
-                    Lesson-{i}: {video.title}
+                    Lesson-{i+1}: {video.title}
                   </h3>
                 </div>
               ))}
