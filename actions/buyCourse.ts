@@ -1,6 +1,7 @@
 "use server"
 import { supabaseClient } from "@/lib/server/Supabase";
 import { clerkClient } from "@clerk/nextjs/server";
+import axios from "axios";
 
 export async function buyCourse(userId: string, courseId: number) {
     try {
@@ -22,8 +23,31 @@ export async function buyCourse(userId: string, courseId: number) {
                 },
             })
         }
-        //add the student in the database
+
+        //add the student to the course group chat
         const supabase = supabaseClient();
+        const {data:courseName} = await supabase
+            .from("courses")
+            .select("name")
+            .eq("id", courseId)
+            .single();
+
+        const createGroupChat = await axios.post("http://localhost:8080/api/chats/create",{
+            teacher:process.env.NEXT_PUBLIC_TEACHER || "user_2vS2izG9XRFznfJ9lpQPBldzuRx",
+            name:courseName?.name,
+            student: userId,
+        })
+        if(createGroupChat.data.message=="Chat with this name already exists for this teacher"){
+            return "Chat already exists for this course";
+        }
+        const createSingleChat =  await axios.post("http://localhost:8080/api/chats/create",{
+            teacher:process.env.NEXT_PUBLIC_TEACHER || "user_2vS2izG9XRFznfJ9lpQPBldzuRx",
+            name:"teacher",
+            student: userId,
+            group: false,
+        })
+        
+        //add the student in the database
         const {data,error} = await supabase.from("students").insert({
             course: courseId,
             student: userId,
@@ -35,7 +59,6 @@ export async function buyCourse(userId: string, courseId: number) {
             console.error("Error inserting student:", error);
             return "Error purchasing course";
         }
-        console.log({data})
 
         return "Course purchased successfully";
     } catch (error) {

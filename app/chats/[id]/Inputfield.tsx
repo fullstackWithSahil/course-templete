@@ -2,64 +2,48 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useUser } from "@clerk/clerk-react";
-import axios from "axios";
-import { Send } from "lucide-react";
+import API from "@/lib/api";
+import { useUser } from "@clerk/nextjs";
+import { Plus, Send } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useSocket } from "./SocketContext";
-import { v4 as uuidv4 } from 'uuid';
+
 
 export default function Inputfield() {
-    const {user} = useUser()
-    const [message,setMessage] = useState("");
-    const [loading,setLoading]= useState(false);
+    const [newMessage,setNewMessage] = useState("");
     const {id} = useParams();
-    const socket = useSocket();
-
-    async function handleSend(){
+    const {user} =useUser();
+    async function handleClick(){
         try {
-            if(!message.trim())return;
-            if(loading) return;
-            setLoading(true);
-            const uuid = uuidv4();
-            
-            const newMessage ={
-                id:uuid,
-                message,
-                sender:user?.id,
-                course:Number(id),
+            const MessageToSend = {
+                chat:id, 
+                sender:user?.id||"sahil",
+                content:newMessage,
                 profile:user?.imageUrl,
-                group:true,
-                firstname:user?.firstName || user?.username || "User",
+                firstname:user?.firstName
             }
-            console.log(newMessage)
-            socket.emit("sendMessage",{...newMessage,room:id});
-            const {data} = await axios.post("http://localhost:8080/api/messages/addmessage",newMessage);
-            if(data.error){
-                toast.error("There was an error sending the message");
-                setLoading(false);
-                return;
-            }
-            setLoading(false);
-            setMessage("");
+            console.log({MessageToSend})
+            const {data}= await API.post("/messages/create",MessageToSend);
+            console.log({data});
         } catch (error) {
-            toast.error("There was an error sending the message");
-            setLoading(false);
+            console.log({error})
+            toast("there was an error sending the message");
         }
     }
-  return (
-    <div className="flex items-center gap-2 px-2 mt-2">
-        <Input 
-            value={message} 
-            onChange={(e)=>setMessage(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleSend()}
-        />
-        <Button onClick={handleSend}>
-            Send
-            <Send className="h-3 w-3 sm:h-4 sm:w-4 mr-0 sm:mr-2" /> 
-        </Button>
-    </div>
-  )
+    return (
+        <div className="grid grid-cols-20 gap-2 grid-rows-1 border-t-2 py-3">
+            <div className="flex items-center justify-center cursor-pointer">
+                <Plus className="my-[auto]"/>
+            </div>
+            <Input 
+                value={newMessage} 
+                onChange={(e)=>setNewMessage(e.target.value)} 
+                className="col-span-16"
+            />
+            <Button className="col-span-3" onClick={handleClick}>
+                Send<Send/>
+            </Button>
+        </div>
+    )
 }

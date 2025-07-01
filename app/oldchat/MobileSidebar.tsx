@@ -7,7 +7,7 @@ type courseType =
 	| {
 			created_at: string;
 			description: string | null;
-			_id: string;
+			id: number;
 			name: string | null;
 			price: number | null;
 			teacher: string | null;
@@ -24,8 +24,8 @@ export default function MobileSidebar({ courses }: { courses: courseType }) {
 			<SheetContent>
 				{courses?.map((course) => (
 					<Link
-						href={`/chats/${course._id}`}
-						key={course._id}
+						href={`/chats/${course.id}`}
+						key={course.id}
 						className={buttonVariants() + " w-3/4"}
 					>
 						{course.name}
