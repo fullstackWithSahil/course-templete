@@ -19,7 +19,8 @@ type ActionType =
   | { type: "ADD_MESSAGE"; payload: MessageType }
   | { type: "DELETE_MESSAGE"; payload: { id: string } }
   | { type: "UPDATE_MESSAGE"; payload: { id: string; updates: Partial<MessageType> } }
-  | { type: "CLEAR_MESSAGES" };
+  | { type: "CLEAR_MESSAGES" }
+  | { type:"ADD_MANY_MESSAGES"; payload:MessageType[]};
 
 type StateType = MessageType[];
 
@@ -42,6 +43,13 @@ function reducer(state: StateType, action: ActionType): StateType {
       return state.map((msg) =>
         msg._id === action.payload.id ? { ...msg, ...action.payload.updates } : msg
       );
+
+    case "ADD_MANY_MESSAGES":
+      return [
+        // Filter out duplicates
+        ...action.payload,
+        ...state,
+      ];
 
     case "CLEAR_MESSAGES":
       return [];

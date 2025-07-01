@@ -8,12 +8,14 @@ import { Plus, Send } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useSocket } from "./SocketContext";
 
 
 export default function Inputfield() {
     const [newMessage,setNewMessage] = useState("");
     const {id} = useParams();
     const {user} =useUser();
+    const socket = useSocket();
     async function handleClick(){
         try {
             const MessageToSend = {
@@ -21,11 +23,12 @@ export default function Inputfield() {
                 sender:user?.id||"sahil",
                 content:newMessage,
                 profile:user?.imageUrl,
-                firstname:user?.firstName
+                firstname:user?.firstName,
+                type: "text",
             }
-            console.log({MessageToSend})
+            socket?.emit("sendMessage",MessageToSend);
             const {data}= await API.post("/messages/create",MessageToSend);
-            console.log({data});
+            setNewMessage("");
         } catch (error) {
             console.log({error})
             toast("there was an error sending the message");
@@ -40,6 +43,11 @@ export default function Inputfield() {
                 value={newMessage} 
                 onChange={(e)=>setNewMessage(e.target.value)} 
                 className="col-span-16"
+                onKeyDown={(e)=>{
+                    if(e.nativeEvent.key=="Enter"){
+                        handleClick();
+                    }
+                }}
             />
             <Button className="col-span-3" onClick={handleClick}>
                 Send<Send/>
