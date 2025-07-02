@@ -6,16 +6,16 @@ import API from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
 import { Plus, Send } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { toast } from "sonner";
-import { useSocket } from "./SocketContext";
+import { SocketContext } from "./SocketContext";
 
 
 export default function Inputfield() {
     const [newMessage,setNewMessage] = useState("");
     const {id} = useParams();
     const {user} =useUser();
-    const socket = useSocket();
+    const socket = useContext(SocketContext);
     async function handleClick(){
         try {
             const MessageToSend = {

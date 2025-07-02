@@ -1,32 +1,21 @@
 "use client";
-import {io, Socket} from "socket.io-client";
-import { createContext, useContext, useEffect, useState } from "react";
+
 import { useParams } from "next/navigation";
+import { createContext, ReactNode, useEffect, useState } from "react";
+import { io, Socket } from "socket.io-client";
 
-const SocketContext = createContext<Socket|null>(null);
+export const SocketContext = createContext<Socket|null>(null);
 
-export default function SocketProvider({ children }: { children: React.ReactNode }) {
-    const [socket, setSocket] = useState<Socket|null>(null);
+export default function SocketProvider({children}:{children:ReactNode}){
+    const [socket,setSocket] = useState<Socket|null>(null);
     const {id} = useParams();
     useEffect(()=>{
-        const _socket = io("http://localhost:8080");
-        setSocket(_socket);
-        _socket.emit('joinRoom',id);
-        return()=>{
-            _socket.disconnect();
-        }
+        const _socket = io("http://localhost:8080/")
+        setSocket(_socket)
     },[id])
     return(
         <SocketContext.Provider value={socket}>
             {children}
         </SocketContext.Provider>
     )
-}
-
-export function useSocket() {
-    const context = useContext(SocketContext);
-    // if (!context) {
-    //     throw new Error("useSocket must be used within a SocketProvider");
-    // }
-    return context;
 }

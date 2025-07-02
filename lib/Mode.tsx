@@ -16,7 +16,7 @@ export default function ModeProvider({
   children: ReactNode,
   className: string
 }) {
-  const [mode, setMode] = useState<"dark" | "light">("light");
+  const [mode, setMode] = useState<"dark" | "light">("dark");
   
   return (
     <ModeContext.Provider value={{ mode, setMode }}>

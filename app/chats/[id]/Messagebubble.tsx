@@ -2,10 +2,11 @@
 
 import API from "@/lib/api";
 import { useParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useMessages } from "./Messageprovider";
-import Message from "./Message";
+import { SocketContext } from "./SocketContext";
+import Message from "../Message/TextMessage";
 
 export default function MessageBubble() {
 	const { id } = useParams();
@@ -73,8 +74,42 @@ export default function MessageBubble() {
 		const container = containerRef.current;
 		if (!container) return;
 		container.addEventListener("scroll", handleScroll);
-		return () => container.removeEventListener("scroll", handleScroll);
+		return () => {
+			container.removeEventListener("scroll", handleScroll);
+		}
 	}, []);
+
+	const socket = useContext(SocketContext);
+	useEffect(()=>{
+        socket?.emit("joinRoom", id);
+
+		function handleReceiveMessage(message: any){
+            dispatch({type:"ADD_MESSAGE",payload:{
+				...message,
+				_id:String(Math.random()),
+				createdAt:new Date(Date.now()),
+				updatedAt:new Date(Date.now()),
+			}})
+			messagesEndRef.current?.scrollIntoView();
+        };
+		function handleEditMessage(message:any){
+			dispatch({type:"UPDATE_MESSAGE",payload:message})
+		}
+		function handleDeleteMessage(id:string){
+			dispatch({type:"DELETE_MESSAGE",payload:{id}})
+		}
+
+		socket?.on("receiveMessage", handleReceiveMessage);
+        socket?.on("receiveEditMessage", handleEditMessage);
+        socket?.on("receiveDeleteMessage",handleDeleteMessage);
+
+        // Cleanup listeners
+        return () => {
+            socket?.off("receiveMessage", handleReceiveMessage);
+            socket?.off("receiveEditMessage", handleEditMessage);
+            socket?.off("receiveDeleteMessage",handleDeleteMessage);
+        };
+	},[id,socket])
 
 	return (
 		<div ref={containerRef} className="row-span-9 overflow-y-scroll flex flex-col">
