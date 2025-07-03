@@ -11,8 +11,9 @@ import { useUser } from "@clerk/nextjs";
 import axios from "axios";
 import { File, ImageIcon, Plus, VideoIcon } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { toast } from "sonner";
+import { SocketContext } from "./SocketContext";
 
 const Icons = [
 	{ type: "image", icon: ImageIcon },
@@ -28,16 +29,14 @@ export default function FileUploader() {
 
 	const { id } = useParams();
 	const { user } = useUser();
+	const socket = useContext(SocketContext);
 
 	async function handleUpload(file: File) {
 		if (!file || !user?.id) return;
 
 		try {
 			setUploading(true);
-			console.log({
-				fileName: file.name,
-				fileType: file.type,
-			});
+
 			// Step 1: Get presigned URL from your backend
 			const {data} = await axios.post("/api/uplode", {
 				fileName: file.name,
@@ -54,7 +53,6 @@ export default function FileUploader() {
 				},
 				body: file,
 			});
-			console.log({response})
 
 			// Step 3: Notify backend that upload completed
 			const res = await API.post("/messages/upload/file", {
@@ -64,7 +62,8 @@ export default function FileUploader() {
 				profile:user.imageUrl,
 				type,
 			});
-			console.log(res);
+			console.log({res:res.data})
+			socket?.emit("sendMessage",res.data);
 
 			toast.success("File uploaded!");
 			setOpen(false);

@@ -54,7 +54,7 @@ export default function Inputfield() {
 			/>
 
 			<Button className="col-span-3" onClick={handleClick}>
-				Send <Send className="ml-2 w-4 h-4" />
+				<b className="hidden md:block">Send</b> <Send className="ml-2 w-4 h-4" />
 			</Button>
 		</div>
 	);

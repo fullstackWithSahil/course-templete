@@ -6,7 +6,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useMessages } from "./Messageprovider";
 import { SocketContext } from "./SocketContext";
-import Message from "../Message/TextMessage";
+import Message from "../Message/Message";
 
 export default function MessageBubble() {
 	const { id } = useParams();
@@ -84,12 +84,14 @@ export default function MessageBubble() {
         socket?.emit("joinRoom", id);
 
 		function handleReceiveMessage(message: any){
-            dispatch({type:"ADD_MESSAGE",payload:{
+			const payload = {
 				...message,
 				_id:String(Math.random()),
 				createdAt:new Date(Date.now()),
 				updatedAt:new Date(Date.now()),
-			}})
+			}
+			console.log({payload})
+            dispatch({type:"ADD_MESSAGE",payload})
 			messagesEndRef.current?.scrollIntoView();
 			setTimeout(() => {
 				containerRef.current?.scrollBy({
@@ -118,6 +120,7 @@ export default function MessageBubble() {
             socket?.off("receiveDeleteMessage",handleDeleteMessage);
         };
 	},[id,socket])
+	console.log(state)
 
 	return (
 		<div ref={containerRef} className="row-span-9 overflow-y-scroll flex flex-col">

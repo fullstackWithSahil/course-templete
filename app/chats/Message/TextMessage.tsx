@@ -13,8 +13,9 @@ import { useUser } from "@clerk/nextjs";
 import { Edit, MoreVertical, Trash2, Check, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { MessageType } from "../[id]/Messageprovider";
+import { calculateDate, getInitials } from "./Message";
 
-export default function Message({
+export default function TextMessage({
 	_id,
 	profile,
 	content,
@@ -159,29 +160,4 @@ export default function Message({
 			</div>
 		</div>
 	);
-}
-
-function getInitials(name: string): string {
-	return name
-		.split(" ")
-		.map((part) => part[0])
-		.join("")
-		.toUpperCase();
-}
-
-function calculateDate(updatedAt:string,createdAt:string){
-    let date = "";
-    if(updatedAt==createdAt){
-        date = new Date(createdAt||updatedAt).toLocaleString()
-    }else{
-        date = new Date(updatedAt || createdAt).toLocaleString()
-    }
-    const today = date.split(",")[0];
-    const now = new Date(Date.now())
-    const formated = `${now.getMonth()+1}/${now.getDay()-1}/${now.getFullYear()}`
-    if(today==formated){
-        return date.split(",")[1];
-    }else{
-        return date.split(",")[0];
-    }
 }
