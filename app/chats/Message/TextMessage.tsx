@@ -66,7 +66,7 @@ export default function Message({
 
 	return (
 		<div
-			className={`flex items-center gap-3 mx-3 my-2 p-2 rounded-2xl ${
+			className={`flex items-center gap-3 mx-3 my-1 p-2 rounded-2xl ${
 				!isOwnMessage ? "dark:bg-gray-700 bg-gray-100" : ""
 			}`}
 		>

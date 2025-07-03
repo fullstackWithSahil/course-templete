@@ -91,10 +91,18 @@ export default function MessageBubble() {
 				updatedAt:new Date(Date.now()),
 			}})
 			messagesEndRef.current?.scrollIntoView();
+			setTimeout(() => {
+				containerRef.current?.scrollBy({
+					top: 300,
+					behavior: "smooth",
+				});
+			}, 10);
         };
+
 		function handleEditMessage(message:any){
 			dispatch({type:"UPDATE_MESSAGE",payload:message})
 		}
+		
 		function handleDeleteMessage(id:string){
 			dispatch({type:"DELETE_MESSAGE",payload:{id}})
 		}
@@ -116,7 +124,7 @@ export default function MessageBubble() {
 			{state.map((message) => (
 				<Message key={message._id} {...message} />
 			))}
-			<div ref={messagesEndRef}></div>
+			<div className="border-2 border-white" ref={messagesEndRef}></div>
 		</div>
 	);
 }
