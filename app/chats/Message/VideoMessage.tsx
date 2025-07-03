@@ -2,10 +2,10 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Download, Trash2 } from "lucide-react";
 import { MessageType } from "../[id]/Messageprovider";
 import { useUser } from "@clerk/nextjs";
-import { calculateDate, getInitials } from "./Message";
+import { calculateDate, getInitials, handleDownload } from "./Message";
 
 export default function VideoMessage({
   _id,
@@ -18,6 +18,7 @@ export default function VideoMessage({
 }: MessageType) {
   const { user } = useUser();
   const isOwnMessage = sender === user?.id;
+	const fileName = content.split("/").pop()?.split("?")[0] || "file";
 
   const handleDelete = () => {
     // TODO: Hook this up to your delete logic
@@ -58,13 +59,19 @@ export default function VideoMessage({
         )}
       </div>
 
-      {/* Image Preview */}
-      <div className="rounded-xl overflow-hidden">
-        <video
-          src={"https://buisnesstools-course.b-cdn.net/user_2vS2izG9XRFznfJ9lpQPBldzuRx/shravan/test.mp4"}
-          className="w-3/4 h-auto object-cover transition-all hover:scale-105"
-        />
-      </div>
+      {/* video Preview */}
+      <div className="rounded-xl overflow-hidden relative w-fit">
+				<video
+					src={content}
+					className="w-3/4 h-auto object-cover transition-all"
+				/>
+				<div className="absolute inset-0 z-10 flex items-center justify-center bg-white dark:bg-black opacity-0 hover:opacity-50 w-3/4">
+					<Download
+						onClick={()=>handleDownload(content)}
+						className="text-blue-700 dark:text-blue-400 w-6 h-6"
+					/>
+				</div>
+			</div>
     </div>
   );
 }

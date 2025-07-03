@@ -11,7 +11,7 @@ import {
 import { useUser } from "@clerk/nextjs";
 import { Download, FileText, MoreVertical, Trash2 } from "lucide-react";
 import { MessageType } from "../[id]/Messageprovider";
-import { calculateDate, getInitials } from "./Message";
+import { calculateDate, getInitials, handleDownload } from "./Message";
 
 function formatFileSize(bytes: number): string {
 	if (bytes === 0) return "0 B";
@@ -65,15 +65,13 @@ export default function FileMessage({
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-3">
 						<FileText className="h-5 w-5 text-blue-600 dark:text-blue-300" />
-						<a
-							href={"https://buisnesstools-course.b-cdn.net/user_2vS2izG9XRFznfJ9lpQPBldzuRx/shravan/ppt%20format%20for%20%20HACKTHON%202024.pptx"}
-							download
-							target="_blank"
-							rel="noopener noreferrer"
-							className="text-sm text-blue-700 dark:text-blue-400 underline truncate max-w-[200px]"
+                        {fileName}
+						<div
+							onClick={()=>handleDownload(content)}
+							className="text-sm cursor-pointer text-blue-700 dark:text-blue-400 underline truncate max-w-[200px]"
 						>
-							{fileName}
-						</a>
+                            <Download/>
+						</div>
 						<span className="text-xs text-gray-500 dark:text-gray-400">
 							{formatFileSize(fileSize)}
 						</span>

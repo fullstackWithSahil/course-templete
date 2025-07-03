@@ -127,7 +127,7 @@ export default function MessageBubble() {
 			{state.map((message) => (
 				<Message key={message._id} {...message} />
 			))}
-			<div className="border-2 border-white" ref={messagesEndRef}></div>
+			<div ref={messagesEndRef}></div>
 		</div>
 	);
 }
