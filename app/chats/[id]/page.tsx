@@ -1,6 +1,6 @@
 "use client";
 import Inputfield from "./Inputfield";
-import MessageBubble from "./MessageBubble";
+import MessageBubble from "./Messagebubble";
 
 export default function page() {
 	return (

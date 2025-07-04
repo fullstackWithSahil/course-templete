@@ -40,8 +40,13 @@ function reducer(state: StateType, action: ActionType): StateType {
       return state.filter((msg) => msg._id !== action.payload.id);
 
     case "UPDATE_MESSAGE":
-      return state.map((msg) =>
-        msg._id === action.payload.id ? { ...msg, ...action.payload.updates } : msg
+      return state.map((msg) =>{
+        if(msg._id===action.payload.id){
+          return {...msg,...action.payload.updates}
+        }else{
+          return msg;
+        }
+      }
       );
 
     case "ADD_MANY_MESSAGES":

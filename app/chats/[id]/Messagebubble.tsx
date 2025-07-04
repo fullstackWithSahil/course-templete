@@ -84,14 +84,7 @@ export default function MessageBubble() {
         socket?.emit("joinRoom", id);
 
 		function handleReceiveMessage(message: any){
-			const payload = {
-				...message,
-				_id:String(Math.random()),
-				createdAt:new Date(Date.now()),
-				updatedAt:new Date(Date.now()),
-			}
-			console.log({payload})
-            dispatch({type:"ADD_MESSAGE",payload})
+            dispatch({type:"ADD_MESSAGE",payload:message})
 			messagesEndRef.current?.scrollIntoView();
 			setTimeout(() => {
 				containerRef.current?.scrollBy({
@@ -102,10 +95,14 @@ export default function MessageBubble() {
         };
 
 		function handleEditMessage(message:any){
-			dispatch({type:"UPDATE_MESSAGE",payload:message})
+			dispatch({type:"UPDATE_MESSAGE",payload:{
+				id:message._id,
+				updates:message
+			}})
 		}
 		
 		function handleDeleteMessage(id:string){
+			console.log({id})
 			dispatch({type:"DELETE_MESSAGE",payload:{id}})
 		}
 
@@ -120,7 +117,6 @@ export default function MessageBubble() {
             socket?.off("receiveDeleteMessage",handleDeleteMessage);
         };
 	},[id,socket])
-	console.log(state)
 
 	return (
 		<div ref={containerRef} className="row-span-9 overflow-y-scroll flex flex-col">

@@ -11,9 +11,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { useUser } from "@clerk/nextjs";
 import { Edit, MoreVertical, Trash2, Check, X } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { MessageType } from "../[id]/Messageprovider";
 import { calculateDate, getInitials } from "./Message";
+import { SocketContext } from "../[id]/SocketContext";
+import API from "@/lib/api";
 
 export default function TextMessage({
 	_id,
@@ -23,11 +25,13 @@ export default function TextMessage({
 	sender,
 	createdAt,
 	updatedAt,
+	chat,
 }: MessageType) {
 	const { user } = useUser();
 	const [isEditing, setIsEditing] = useState(false);
 	const [editContent, setEditContent] = useState(content);
 	const editInputRef = useRef<HTMLInputElement>(null);
+	const socket = useContext(SocketContext);
 
 	const isOwnMessage = sender === user?.id;
 
@@ -42,9 +46,20 @@ export default function TextMessage({
 		setIsEditing(true);
 	};
 
-	const handleSaveEdit = () => {
+	const handleSaveEdit = async() => {
 		if (editContent.trim() && editContent !== content && _id) {
-			// onEdit(id, editContent.trim());
+			const editedMessage = {
+				_id,
+				profile,
+				content:editContent,
+				firstname,
+				sender,
+				createdAt,
+				updatedAt,
+				chat
+			}
+			socket?.emit("editMessage",editedMessage);
+			await API.put(`/messages/${_id}`,{ content:editContent })
 		}
 		setIsEditing(false);
 		setEditContent(content);
@@ -55,7 +70,13 @@ export default function TextMessage({
 		setEditContent(content);
 	};
 
-	const handleDelete = () => {};
+	const handleDelete = async() => {
+		socket?.emit("deleteMessage",{
+			id:_id,
+			chat,
+		});
+		await API.delete(`/messages/${_id}`)
+	};
 
 	const handleKeyPress = (e: React.KeyboardEvent) => {
 		if (e.key === "Enter") {

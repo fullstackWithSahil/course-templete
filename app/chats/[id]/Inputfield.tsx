@@ -28,8 +28,8 @@ export default function Inputfield() {
 				firstname: user?.firstName,
 				type: "text",
 			};
-			socket?.emit("sendMessage", MessageToSend);
 			const { data } = await API.post("/messages/create", MessageToSend);
+			socket?.emit("sendMessage", data);
 			setNewMessage("");
 		} catch (error) {
 			console.log({ error });
