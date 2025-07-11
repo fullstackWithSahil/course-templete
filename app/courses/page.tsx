@@ -1,6 +1,6 @@
-import Card from "@/components/CourseCard";
 import NoCourses from "@/components/NoCourses";
 import { supabaseClient } from "@/lib/server/Supabase";
+import Card from "./Coursecard";
 
 export default async function Page() {
   const supabase = supabaseClient();
@@ -22,7 +22,6 @@ export default async function Page() {
           description={course.description||""} 
           logo={course.thumbnail||""} 
           id={course.id}
-          watch={false}
         />))}
     </main>
   );

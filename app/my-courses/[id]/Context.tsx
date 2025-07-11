@@ -37,7 +37,6 @@ export default function ContextProvider({
         currentVideo
     });
 
-
     return (
         <Context.Provider value={{data,setdata}}>
             {children}

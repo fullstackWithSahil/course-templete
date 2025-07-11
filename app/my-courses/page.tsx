@@ -1,6 +1,7 @@
-import Card from "@/components/CourseCard";
-import NoCourses from "@/components/NoCourses";import { supabaseClient } from "@/lib/server/Supabase";
+import NoCourses from "@/components/NoCourses";
+import { supabaseClient } from "@/lib/server/Supabase";
 import { clerkClient, currentUser } from '@clerk/nextjs/server'
+import Card from "./Coursecart";
 
 export default async function Page() {
   const user = await currentUser();
@@ -32,7 +33,6 @@ export default async function Page() {
         description={course.description||""} 
         logo={course.thumbnail||""} 
         id={course.id}
-        watch={true}
       />))}
     </main>
   );

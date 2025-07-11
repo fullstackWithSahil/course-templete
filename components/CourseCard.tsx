@@ -5,6 +5,7 @@ import { useAuth, useSession, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
+import { Progress } from "./ui/progress";
 
 export default function Card({
   logo,
@@ -87,6 +88,7 @@ export default function Card({
           <p className="text-sm md:text-base text-center leading-relaxed">
             {description}
           </p>
+          {watch&&<Progress value={33} />}
           <div className="flex items-center justify-center gap-6">
             <Button
               onClick={handelClick}
