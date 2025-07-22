@@ -76,6 +76,7 @@ export default function Content({
 									<a
 										href={pdfUrl}
 										target="_blank"
+                                        download={"certificate.pdf"}
 										rel="noopener noreferrer"
 										className="w-full bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-600 hover:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base"
 									>

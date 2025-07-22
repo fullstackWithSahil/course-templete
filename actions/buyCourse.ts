@@ -40,12 +40,6 @@ export async function buyCourse(userId: string, courseId: number) {
         if(createGroupChat.data.message=="Chat with this name already exists for this teacher"){
             return "Chat already exists for this course";
         }
-        const createSingleChat =  await axios.post("http://localhost:8080/api/chats/create",{
-            teacher:process.env.NEXT_PUBLIC_TEACHER || "user_2vS2izG9XRFznfJ9lpQPBldzuRx",
-            name:"teacher",
-            student: userId,
-            group: false,
-        })
         
         //add the student in the database
         const {data,error} = await supabase.from("students").insert({

@@ -10,7 +10,7 @@ export default function SocketProvider({children}:{children:ReactNode}){
     const [socket,setSocket] = useState<Socket|null>(null);
     const {id} = useParams();
     useEffect(()=>{
-        const _socket = io("http://localhost:8080/")
+        const _socket = io(process.env.NEXT_PUBLIC_BACKEND_URL!)
         setSocket(_socket)
     },[id])
     return(

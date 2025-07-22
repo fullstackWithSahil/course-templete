@@ -23,7 +23,7 @@ export default function Content({ blocks }: { blocks: Module[] }) {
               {block.videos.map((video, i) => (
                 <div 
                   key={video.id}
-                  className="flex items-center gap-2 mb-3"
+                  className="flex items-center gap-2 mb-3 cursor-pointer"
                   onClick={()=>{setdata((prev)=>({...prev,currentVideo:video}))}} 
                 >
                   <img

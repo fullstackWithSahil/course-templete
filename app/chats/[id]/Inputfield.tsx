@@ -31,7 +31,11 @@ export default function Inputfield() {
 			const { data } = await API.post("/messages/create", MessageToSend);
 			socket?.emit("sendMessage", data);
 			setNewMessage("");
-		} catch (error) {
+		} catch (error:any) {
+			if(error.response?.data=='You are banned from this chat'){
+				toast("you are banned from this chat");
+				return;
+			}
 			console.log({ error });
 			toast("There was an error sending the message");
 		}
