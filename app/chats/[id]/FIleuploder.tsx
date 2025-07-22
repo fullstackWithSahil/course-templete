@@ -8,12 +8,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import API from "@/lib/api";
 import { useUser } from "@clerk/nextjs";
-import axios from "axios";
 import { File, ImageIcon, Plus, VideoIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useContext, useRef, useState } from "react";
 import { toast } from "sonner";
 import { SocketContext } from "./SocketContext";
+import axios from "axios";
 
 const Icons = [
 	{ type: "image", icon: ImageIcon },

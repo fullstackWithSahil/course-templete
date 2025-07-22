@@ -1,9 +1,9 @@
 "use server"
+import API from "@/lib/api";
 import { supabaseClient } from "@/lib/server/Supabase";
 import { clerkClient } from "@clerk/nextjs/server";
-import axios from "axios";
 
-export async function buyCourse(userId: string, courseId: number) {
+export async function buyCourse(userId: string, courseId: number){
     try {
         console.log({userId, courseId});
         const client = await clerkClient();
@@ -28,18 +28,25 @@ export async function buyCourse(userId: string, courseId: number) {
         const supabase = supabaseClient();
         const {data:courseName} = await supabase
             .from("courses")
-            .select("name")
+            .select("*")
             .eq("id", courseId)
             .single();
 
-        const createGroupChat = await axios.post("http://localhost:8080/api/chats/create",{
-            teacher:process.env.NEXT_PUBLIC_TEACHER || "user_2vS2izG9XRFznfJ9lpQPBldzuRx",
-            name:courseName?.name,
-            student: userId,
+            
+        //create a personal chat and check if the user has already purchased the course
+        const {data:personalChat} = await API.post("/chats/create",{ 
+            teacher:process.env.NEXT_PUBLIC_TEACHER,
+            name,
+            student:user.id
         })
-        if(createGroupChat.data.message=="Chat with this name already exists for this teacher"){
-            return "Chat already exists for this course";
+        if (personalChat.message=="Chat with this name already exists for this teacher"){
+            return "Chat with this name already exists for this teacher"
         }
+
+        const createGroupChat = await API.post("/chats/add-member",{ 
+            chatId:courseName?.chat, 
+            member:user.id 
+        })
         
         //add the student in the database
         const {data,error} = await supabase.from("students").insert({
