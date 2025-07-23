@@ -1,10 +1,8 @@
 "use client"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import supabaseClient from "@/lib/Supabase";
 import { useSession, useUser } from "@clerk/nextjs";
-import { Heart, MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useVideoContext } from "./Context";
 import { toast } from "sonner";
@@ -40,7 +38,7 @@ export default function Comments() {
                 if (error) {
                     toast.error("Error fetching comments")
                 } else {
-                    setComments(data as CommentType[]);
+                    setComments(data as any[]);
                 }
             });
     }, [data.currentVideo.id])
@@ -62,7 +60,7 @@ export default function Comments() {
                 .single();
             
             if (newComment) {
-                setComments((prev) => [newComment as CommentType, ...prev]);
+                setComments((prev) => [newComment as any, ...prev]);
             }
             setComment("");
             if (error) {

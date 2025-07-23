@@ -86,7 +86,7 @@ export function CommentBlock(props: CommentBlockProps) {
                     .single();
 
                 if (newReply && onReplyAdded) {
-                    onReplyAdded(newReply as CommentType);
+                    onReplyAdded(newReply as any);
                     setReplyText("");
                     setShowReplyInput(false);
                     setShowReplies(true); // Show replies when a new one is added
