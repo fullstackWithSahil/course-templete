@@ -1,8 +1,9 @@
 "use client";
-import { buyCourse } from "@/actions/buyCourse";
+import buyCourse from "@/actions/buyCourse";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@clerk/nextjs";
+import { RedirectToSignUp, useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
+import { useRouter } from 'next/navigation';
 
 export default function Card({
 	logo,
@@ -16,20 +17,17 @@ export default function Card({
 	description: string;
 }) {
 	const { userId } = useAuth();
-
-	if (!userId) {
-		return (
-			<div>
-				<p>you are not allowed to see this page</p>
-			</div>
-		);
-	}
-	async function handelClick() {
-		// handle logic to buy the course
-      const data = await buyCourse(userId!,id);
-      if(data=="Error purchasing course"){
-        toast(data);
-      }
+	const router = useRouter();
+	async function handelClick(){
+		if(!userId){
+			return <RedirectToSignUp/>
+		}
+		const data = await buyCourse(userId,id);
+		if(data.success){
+			router.push(data.paymentUrl||"")
+		}else{
+			toast(data.message);
+		}
 	}
 
 	return (
