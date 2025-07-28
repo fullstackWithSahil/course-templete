@@ -1,9 +1,8 @@
 import NoCourses from "@/components/NoCourses";
-import API from "@/lib/api";
 import { supabaseClient } from "@/lib/server/Supabase"
 import { currentUser } from "@clerk/nextjs/server";
-import { Award, Download, Share2, Trophy, Star } from "lucide-react";
 import Content from "./Content";
+import axios from "axios";
 
 export default async function Page({ params }: { params: Promise<{ id: string }>}){
     const {id} = await params;
@@ -44,9 +43,8 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         return <NoCourses text="You have not completed this course"/>
     }
 
-    const {data} = await API.post("/certificate",{ 
+    const {data} = await axios.post("https://67tio1utj4.execute-api.us-east-1.amazonaws.com/default/generate-certificate",{ 
         name:user.firstName,
-        course:id, 
         teacher:process.env.NEXT_PUBLIC_TEACHER 
     })
     

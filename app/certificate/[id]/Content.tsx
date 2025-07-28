@@ -83,11 +83,6 @@ export default function Content({
 										<Download className="w-4 h-4" />
 										Download Certificate
 									</a>
-
-									<button className="w-full bg-gradient-to-r from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 text-white py-3 px-4 rounded-lg font-medium hover:from-purple-600 hover:to-purple-700 dark:hover:from-purple-700 dark:hover:to-purple-800 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base">
-										<Share2 className="w-4 h-4" />
-										Share Achievement
-									</button>
 								</div>
 							</div>
 						</div>

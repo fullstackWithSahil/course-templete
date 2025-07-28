@@ -1,6 +1,6 @@
 import NoCourses from "@/components/NoCourses";
 import { supabaseClient } from "@/lib/server/Supabase";
-import { clerkClient, currentUser } from '@clerk/nextjs/server'
+import { currentUser } from '@clerk/nextjs/server'
 import Card from "./Coursecart";
 
 export default async function Page() {
@@ -15,6 +15,10 @@ export default async function Page() {
     .select("*")
     .eq("student",user.id)
     .eq("teacher",process.env.NEXT_PUBLIC_TEACHER!);
+
+  if(!students){
+    return <NoCourses text="You have not purchased any courses"/>
+  }
 
   const courseIds = students?.map(student=>student.course);
   const {data:courses} = await supabase

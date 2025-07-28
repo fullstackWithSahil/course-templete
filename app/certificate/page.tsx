@@ -1,43 +1,48 @@
 import NoCourses from "@/components/NoCourses";
 import { supabaseClient } from "@/lib/server/Supabase";
-import { currentUser } from "@clerk/nextjs/server"
+import { currentUser } from '@clerk/nextjs/server'
 import Card from "./Card";
 
-export default async function Page(){
+export default async function Page() {
   const user = await currentUser();
-  if(!user){
-    return <NoCourses text="You have not purchased any courses"/>
+  if (!user) {
+    return <NoCourses text="You haven't purchased any courses" />;
   }
+  
   const supabase = supabaseClient();
-  const {data} = await supabase.from("students").select("*").eq("student",user.id)
-  if(!data){
+  const {data:students} = await supabase
+    .from("students")
+    .select("*")
+    .eq("student",user.id)
+    .eq("teacher",process.env.NEXT_PUBLIC_TEACHER!);
+
+  if(!students){
     return <NoCourses text="You have not purchased any courses"/>
   }
 
-  const promises = data.map((student)=>{
-    return new Promise(async(resolve,reject)=>{
-      try {
-        if(!student.course) return;
-        const {data:videos} = await supabase.from("videos").select("*").eq("course",student.course||0);
-        console.log({videos,student:student.watchedVideos})
-        if(student.watchedVideos?.length==videos?.length){
-          resolve(student.course);
-        }else{
-          resolve(-1);
-        }
-      } catch (error) {
-        reject(error);
+  const courseIds = students?.map(student=>student.course);
+  const {data:courses} = await supabase
+    .from("courses")
+    .select("*")
+    .in("id",courseIds as any);
+
+    const formatedData = courses?.map((course)=>{
+      const watchedVideos = students?.find((s)=>s.course==course.id);
+      return {
+        ...course,
+        watchedVideos:watchedVideos?.watchedVideos
       }
     })
-  })
-  const completedCourses = await Promise.all(promises)
-  if(completedCourses.length==0){
-    return <NoCourses text="You havent completed any course yet"/>
-  }
-  console.log({completedCourses})
-  return(
-    <main className="my-24">
-      {completedCourses.map((course,i)=><Card id={course as number} key={i}/>)}
+    return (
+    <main className="my-24 px-4">
+      {(formatedData?.map(course=><Card
+        key={course.id} 
+        id={course.id}
+        name={course.name}
+        thumbnail={course.thumbnail}
+        watchedVideos={course.watchedVideos}
+        description={course.description}
+      />))}
     </main>
-  )
+  );
 }

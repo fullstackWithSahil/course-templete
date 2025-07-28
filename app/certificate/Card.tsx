@@ -2,11 +2,29 @@ import { buttonVariants } from "@/components/ui/button";
 import { supabaseClient } from "@/lib/server/Supabase";
 import Link from "next/link";
 
-export default async function Card({id}:{id:number}) {
-    const supabase = supabaseClient();
-    const {data} = await supabase.from("courses").select("*").eq('id',id).single();
-    if(!data) return null;
-    const {thumbnail,name,description} = data;
+type cardTypes = {
+    watchedVideos: number[] | null | undefined;
+    description: string | null;
+    id: number;
+    name: string | null;
+    thumbnail: string | null;
+};
+
+export default async function Card({
+	thumbnail,
+	name,
+	description,
+	id,
+	watchedVideos
+}:cardTypes) {
+	const supabase = supabaseClient();
+	const {data:videos} = await supabase.from("videos").select("id").eq("course",id);
+	if(!watchedVideos||!videos){
+		return <div></div>
+	}
+	if(videos?.length>watchedVideos?.length){
+		return <div></div>
+	}
 	return (
 		<div className="max-w-5xl mx-auto border-2 border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden shadow-lg my-3">
 			<div className="grid grid-cols-1 md:grid-cols-3">

@@ -1,11 +1,11 @@
 "use client";
-import { buyCourse } from "@/actions/buyCourse";
 import supabaseClient from "@/lib/Supabase";
 import { useAuth, useSession, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
+import buyCourse from "@/actions/buyCourse";
 
 export default function Card({
   logo,
@@ -66,8 +66,8 @@ export default function Card({
       }
       // handle logic to buy the course
       const data = await buyCourse(userId!,id);
-      if(data=="Error purchasing course"){
-        toast(data);
+      if(!data.success){
+        toast(data.message);
       }
     }
   }
