@@ -11,11 +11,13 @@ export default function Card({
 	id,
 	title,
 	description,
+	watchedVideos
 }: {
 	logo: any;
 	id: number;
 	title: string;
 	description: string;
+	watchedVideos:number[] | null | undefined;
 }) {
 	const router = useRouter();
 	const { userId } = useAuth();
@@ -25,19 +27,10 @@ export default function Card({
     useEffect(()=>{
         const supabase = supabaseClient(session);
         supabase.from("videos").select("id").eq("course",id).then(({data:videos,error})=>{
-            supabase
-                .from("students")
-                .select("*")
-                .eq("course",id)
-                .eq("student",user.user?.id||"")
-                .then(({data,error})=>{
-					const videosWatched = data?data[0].watchedVideos?.length:1
-					const totalVideos = videos?.length||1;
-					const completion = ((videosWatched||0)/totalVideos)*100;
-					console.log({videosWatched,totalVideos})
-					setProgress(completion);
-					console.log({error})
-                })
+			const num = watchedVideos?.length||0
+			const den = videos?.length||1
+			const prog = (num*100)/den;
+			setProgress(prog);
         })
     },[])
 

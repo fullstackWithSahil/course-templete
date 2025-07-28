@@ -8,31 +8,36 @@ export default async function Page() {
   if (!user) {
     return <NoCourses text="You haven't purchased any courses" />;
   }
-  const client = await clerkClient();
-  const data = await client.users.getUser(user.id);
-
-
-  if(!data.privateMetadata.purchasedCourses){
-    return <NoCourses text="You havent purchased any courses"/>
-  }
-
-  const Ids:string = data.privateMetadata.purchasedCourses as string;
-  const courseIds = Ids.split(",").map(id =>Number(id));
   
   const supabase = supabaseClient();
+  const {data:students} = await supabase
+    .from("students")
+    .select("*")
+    .eq("student",user.id)
+    .eq("teacher",process.env.NEXT_PUBLIC_TEACHER!);
+
+  const courseIds = students?.map(student=>student.course);
   const {data:courses} = await supabase
     .from("courses")
     .select("*")
-    .in("id",courseIds);
+    .in("id",courseIds as any);
 
-  return (
+    const formatedData = courses?.map((course)=>{
+      const watchedVideos = students?.find((s)=>s.course==course.id);
+      return {
+        ...course,
+        watchedVideos:watchedVideos?.watchedVideos
+      }
+    })
+    return (
     <main className="my-24 px-4">
-      {(courses?.map(course=><Card
+      {(formatedData?.map(course=><Card
         key={course.id}
         title={course.name||""}
         description={course.description||""} 
         logo={course.thumbnail||""} 
         id={course.id}
+        watchedVideos={course.watchedVideos}
       />))}
     </main>
   );
