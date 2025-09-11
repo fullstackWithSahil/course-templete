@@ -1,3 +1,4 @@
+import NoCourses from "@/components/NoCourses";
 import { buttonVariants } from "@/components/ui/button";
 import { supabaseClient } from "@/lib/server/Supabase";
 import Link from "next/link";
@@ -20,10 +21,18 @@ export default async function Card({
 	const supabase = supabaseClient();
 	const {data:videos} = await supabase.from("videos").select("id").eq("course",id);
 	if(!watchedVideos||!videos){
-		return <div></div>
+		return (
+			<div>
+				<NoCourses text="You have not completed any course"/>
+			</div>
+		)
 	}
 	if(videos?.length>watchedVideos?.length){
-		return <div></div>
+		return (
+			<div>
+				<NoCourses text="You have not completed any course"/>
+			</div>
+		)
 	}
 	return (
 		<div className="max-w-5xl mx-auto border-2 border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden shadow-lg my-3">

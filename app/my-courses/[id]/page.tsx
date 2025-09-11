@@ -4,15 +4,32 @@ import ContextProvider, { Module, Video as VideoType } from "./Context";
 import Content from "./Content";
 import VideoPlayer from "./VideoPlayer";
 import Comments from "./Comments";
+import { currentUser } from "@clerk/nextjs/server";
+import { RedirectToSignIn } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
 export default async function Page({ params }: PageProps) {
-  const param = await params;
-  const id = Number(param.id);
   const supabase = supabaseClient();
+  const param = await params;
+  const user = await currentUser();
+  if (!user) {
+    <RedirectToSignIn/>
+  }
+  const {data:student} = await supabase
+    .from("students")
+    .select("id")
+    .eq("student",user?.id||"")
+    .eq("teacher",process.env.NEXT_PUBLIC_TEACHER!)
+    .single();
+
+  if(!student){
+    redirect("/courses");
+  }
+  const id = Number(param.id);
   const { data } = await supabase.from("videos").select("*").eq("course", id);
 
   //formatting the videos
@@ -51,7 +68,7 @@ export default async function Page({ params }: PageProps) {
             <main className="mt-16">
                 <section className="flex flex-wrap">
                     <VideoPlayer/>
-                    <Content blocks={blocks.reverse()}/>
+                    <Content blocks={blocks}/>
                 </section>
                 <div className="lg:hidden">
                     <Comments/>              

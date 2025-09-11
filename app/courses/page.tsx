@@ -10,6 +10,8 @@ export default async function Page() {
     .select("*")
     .eq("teacher",teacher);
   
+    console.log({data})
+  
   if (!data||!data[0]){
     return <NoCourses text="The teacker has not created any courses yet"/>
   }

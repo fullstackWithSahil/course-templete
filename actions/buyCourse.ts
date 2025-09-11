@@ -105,7 +105,7 @@ export default async function buyCourse(
 
     // Create new payment link (removed the existing link check for simplicity)
     const paymentLinkOptions = {
-      amount: courseData.price * 100, // Convert to paise
+      amount: courseData.price*100, // Convert to paise
       currency: "INR",
       description: `Purchase course: ${courseData.name || `Course ${courseId}`}`,
       customer: {
