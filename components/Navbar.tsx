@@ -10,6 +10,7 @@ const links = [
   {title:"Courses",link:"/courses"},
   {title:"Chats",link:"/chats"},
   {title:"Certificate",link:"/certificate"},
+  {title:"Communities",link:"/communities"},
 ];
 
 const Navbar = () => {

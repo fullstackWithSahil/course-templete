@@ -8,11 +8,19 @@ export const SocketContext = createContext<Socket|null>(null);
 
 export default function SocketProvider({children}:{children:ReactNode}){
     const [socket,setSocket] = useState<Socket|null>(null);
-    const {id} = useParams();
-    useEffect(()=>{
-        const _socket = io(process.env.NEXT_PUBLIC_BACKEND_URL!)
-        setSocket(_socket)
-    },[id])
+    const {chat} = useParams();
+    
+    useEffect(() => {
+        console.log(chat)
+        const _socket = io("http://localhost:8080/");
+        setSocket(_socket);
+        
+        // Cleanup function to disconnect socket
+        return () => {
+            _socket.disconnect();
+        };
+    }, [chat]);
+    
     return(
         <SocketContext.Provider value={socket}>
             {children}
