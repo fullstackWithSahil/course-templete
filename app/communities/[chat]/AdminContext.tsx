@@ -1,7 +1,6 @@
 "use client"
 import { useAuth, useUser } from '@clerk/nextjs';
 import axios from 'axios';
-import { useParams } from 'next/navigation';
 import { 
     createContext, 
     Dispatch, 

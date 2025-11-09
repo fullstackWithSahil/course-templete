@@ -39,10 +39,9 @@ export default function Sidebar({ data }: { data: ServerType[] }) {
 								className="border-none"
 							>
 								<AccordionTrigger className="dark:hover:bg-[#35373c] px-2 py-1.5 rounded-none hover:no-underline text-xs font-semibold uppercase tracking-wide text-white dark:text-[#949ba4] hover:text-[#dbdee1] [&[data-state=open]>svg]:rotate-0">
-									<span className="flex-1 text-left">
+									<span className="flex-1 text-left text-lg font-bold">
 										{server.name}
 									</span>
-									<ChevronDown className="h-3 w-3 shrink-0 transition-transform duration-200 -rotate-90" />
 								</AccordionTrigger>
 								<AccordionContent className="pb-0 pt-1">
 									{server.chats.map((chat) => {

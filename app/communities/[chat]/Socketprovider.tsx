@@ -11,8 +11,7 @@ export default function SocketProvider({children}:{children:ReactNode}){
     const {chat} = useParams();
     
     useEffect(() => {
-        console.log(chat)
-        const _socket = io("http://localhost:8080/");
+        const _socket = io(process.env.NEXT_PUBLIC_SOCKET_SERVER);
         setSocket(_socket);
         
         // Cleanup function to disconnect socket

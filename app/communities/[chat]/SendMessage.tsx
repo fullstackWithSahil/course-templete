@@ -9,8 +9,8 @@ import { useAuth, useUser } from "@clerk/nextjs";
 import { useParams } from "next/navigation";
 import FileUploder from "@/components/FileUploder";
 import { v4 as uuidv4 } from 'uuid';
-import { SocketContext } from "../Socketprovider";
-import { useAdminContext } from "../AdminContext";
+import { SocketContext } from "./Socketprovider";
+import { useAdminContext } from "./AdminContext";
 
 export default function SendMessage() {
 	const {bannedMembers} = useAdminContext();

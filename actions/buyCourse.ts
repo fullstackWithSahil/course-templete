@@ -1,5 +1,6 @@
 "use server";
 
+import { getPaymentLink } from "@/lib/getPaymentLik";
 import { supabaseClient } from "@/lib/server/Supabase";
 import { currentUser } from "@clerk/nextjs/server";
 import Razorpay from 'razorpay';
@@ -79,13 +80,6 @@ export default async function buyCourse(
         message: "Course price is not available"
       };
     }
-
-    // Initialize Razorpay instance
-    const instance = new Razorpay({ 
-      key_id: process.env.KEY_ID!, 
-      key_secret: process.env.SECRET_KEY!
-    });
-
     // Extract email properly
     const customerEmail = typeof user.primaryEmailAddress === "string" 
       ? user.primaryEmailAddress 
@@ -101,49 +95,22 @@ export default async function buyCourse(
       };
     }
 
-    console.log(`Creating payment for user: ${customerName} (${customerEmail})`);
-
-    // Create new payment link (removed the existing link check for simplicity)
-    const paymentLinkOptions = {
-      amount: courseData.price*100, // Convert to paise
-      currency: "INR",
-      description: `Purchase course: ${courseData.name || `Course ${courseId}`}`,
-      customer: {
-        name: customerName,
-        email: customerEmail,
-        contact: "" // Add phone if available
-      },
-      notify: {
-        sms: false,
-        email: true // Enable email notifications
-      },
-      reminder_enable: true,
-      notes: {
-        courseId: courseId.toString(),
-        userId: userId,
-        userEmail: customerEmail, // Add email to notes as well
-        userName: customerName,
-        purpose: "course_purchase"
-      },
-      callback_url: `${process.env.NEXT_PUBLIC_BASE_URL}/my-courses`,
-      callback_method: "get",
-      // Add expire_by to avoid stale links (24 hours from now)
-      expire_by: Math.floor(Date.now() / 1000) + (24 * 60 * 60)
-    };
-
-    console.log("Payment Link Options:", JSON.stringify(paymentLinkOptions, null, 2));
-
-    const newPaymentLink = await instance.paymentLink.create(paymentLinkOptions);
-    
-    console.log(`Created payment link: ${newPaymentLink.id} for ${customerEmail}`);
-
-    return {
-      success: true,
-      message: "Payment link generated successfully",
-      paymentUrl: newPaymentLink.short_url,
-      paymentLinkId: newPaymentLink.id
-    };
-
+    const paymentLink = await getPaymentLink({
+      customer:{customerName,email:customerEmail,userId:user.id},
+      productId:courseId,
+      productType:"course",
+      price:33,
+      description:"Buying a "
+    })
+    if(paymentLink.success){
+      return {
+        success: true,
+        message: "Payment link generated successfully",
+        paymentUrl: paymentLink.url
+      };
+    }else{
+      throw paymentLink.error
+    }
   } catch (error) {
     console.error("Error buying the course:", error);
     

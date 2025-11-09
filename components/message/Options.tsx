@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { useContext } from "react";
-import { SocketContext } from "@/app/communities/Socketprovider";
+import { SocketContext } from "@/app/communities/[chat]/Socketprovider";
 
 export default function Options({
 	sender,

@@ -8,7 +8,6 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 const links = [
   {title:"My Courses",link:"/my-courses"},
   {title:"Courses",link:"/courses"},
-  {title:"Chats",link:"/chats"},
   {title:"Certificate",link:"/certificate"},
   {title:"Communities",link:"/communities"},
 ];

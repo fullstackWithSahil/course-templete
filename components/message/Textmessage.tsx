@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
-import { SocketContext } from "@/app/communities/Socketprovider";
+import { SocketContext } from "@/app/communities/[chat]/Socketprovider";
 
 export default function Textmessage({
 	content,
