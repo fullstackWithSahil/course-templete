@@ -54,7 +54,7 @@ export default function Messagebubble({socket}:{socket:Socket}){
 		getToken().then((token)=>{
 			axios
 				.get(
-					`${process.env.NEXT_PUBLIC_WORKER_URL}/message/${chat}?page=0&limit=10`,
+					`${process.env.NEXT_PUBLIC_CHAT_URL}/message/${chat}?page=0&limit=10`,
 					{headers:{ Authorization: `Bearer ${token}` }}
 				)
 				.then(({ data }) => {
@@ -149,10 +149,10 @@ export default function Messagebubble({socket}:{socket:Socket}){
 		const prevScrollTop = container?.scrollTop || 0;
 
 		getToken().then((token)=>{
-			console.log(`${process.env.NEXT_PUBLIC_WORKER_URL}/message/${chat}?page=${page}&limit=10`)
+			console.log(`${process.env.NEXT_PUBLIC_CHAT_URL}/message/${chat}?page=${page}&limit=10`)
 			axios
 				.get(
-					`${process.env.NEXT_PUBLIC_WORKER_URL}/message/${chat}?page=${page}&limit=10`,
+					`${process.env.NEXT_PUBLIC_CHAT_URL}/message/${chat}?page=${page}&limit=10`,
 					{headers:{ Authorization: `Bearer ${token}` }}
 				)
 				.then(({ data }) => {

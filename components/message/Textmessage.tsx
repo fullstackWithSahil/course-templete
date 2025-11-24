@@ -28,7 +28,7 @@ export default function Textmessage({
 			socket?.emit("editMessage", {id,content:editValue,chatId:chat});
 			const token = await getToken();
 			await axios.patch(
-				`${process.env.NEXT_PUBLIC_WORKER_URL}/message`,
+				`${process.env.NEXT_PUBLIC_CHAT_URL}/message`,
 				{ messageId: id, content: editValue },
 				{ headers: { Authorization: `Bearer ${token}` }}
 			);

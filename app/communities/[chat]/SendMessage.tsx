@@ -60,7 +60,7 @@ export default function SendMessage() {
 			socket?.emit("sendMessage", messageToSend);
 			
 			const token = await getToken();
-			await axios.post(`${process.env.NEXT_PUBLIC_WORKER_URL}/message`, newMessage, {
+			await axios.post(`${process.env.NEXT_PUBLIC_CHAT_URL}/message`, newMessage, {
 				headers: { Authorization: `Bearer ${token}` },
 			});
 			

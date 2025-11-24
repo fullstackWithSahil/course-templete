@@ -23,7 +23,7 @@ export default function Reactions({reactions,messageId}:{
                 messageId
             })
             const token = await getToken();
-            const data = await axios.post(`${process.env.NEXT_PUBLIC_WORKER_URL}/messages/reaction`,{
+            const data = await axios.post(`${process.env.NEXT_PUBLIC_CHAT_URL}/messages/reaction`,{
                 messageId,
                 reaction:{
                     emoji

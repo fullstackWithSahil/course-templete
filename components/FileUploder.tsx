@@ -40,7 +40,7 @@ export default function FileUploder() {
             const formdata = new FormData();
             formdata.append("file", file); // Add the actual file
 			const token = await getToken();
-            const {data}=await axios.post(`${process.env.NEXT_PUBLIC_WORKER_URL}/file`,formdata,{
+            const {data}=await axios.post(`${process.env.NEXT_PUBLIC_CHAT_URL}/file`,formdata,{
 				headers: { Authorization: `Bearer ${token}` },
 			})
 			if(!data.success){
@@ -49,7 +49,7 @@ export default function FileUploder() {
 				return;
 			}
 			const id = uuidv4();
-            const {data:message} =await axios.post(`${process.env.NEXT_PUBLIC_WORKER_URL}/message`,{
+            const {data:message} =await axios.post(`${process.env.NEXT_PUBLIC_CHAT_URL}/message`,{
 				id,
                 message:data.data,
                 type,

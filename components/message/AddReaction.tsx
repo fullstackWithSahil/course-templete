@@ -35,7 +35,7 @@ export default function AddReaction({
     async function handelReaction(emoji:string){
         try {
             const token = await getToken();
-            const data = await axios.post(`${process.env.NEXT_PUBLIC_WORKER_URL}/messages/reaction`,{
+            const data = await axios.post(`${process.env.NEXT_PUBLIC_CHAT_URL}/messages/reaction`,{
                 messageId,
                 reaction:{
                     emoji

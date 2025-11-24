@@ -25,7 +25,7 @@ type ServerType = {
 
 export default async function Sidebar({ data }: { data: ServerType[] }) {
 	return (
-		<section className="hidden md:flex md:col-span-1 w-full bg-primary dark:bg-[#2b2d31] h-screen flex-col dark:text-[#949ba4]">
+		<section className="hidden md:flex md:col-span-1 w-full bg-primary dark:bg-[#2b2d31] flex-col dark:text-[#949ba4]  h-[calc(100vh-3.5rem)]">
 			<div className="p-4 shadow-md bg-primary dark:bg-[#2b2d31] border-b border-[#1e1f22] flex items-center justify-around">
 				<h1 className="text-white font-semibold text-base">Servers</h1>
 				<Modetoggle/>

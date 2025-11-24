@@ -37,11 +37,9 @@ export default function Options({
 	setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
 	tier:"basic"|"vip"|"premium"
 }) {
-    const {admins} = useAdminContext();
 	const { user } = useUser();
-	const { teacher } = useParams();
-	const isOwner = (user?.id === sender)||(admins.includes(user?.id||""));
-	const isAdminOrTeacher = user?.id === teacher;
+	const teacher = process.env.NEXT_PUBLIC_TEACHER!;
+	const isOwner = user?.id === sender
 	const { chat } = useParams();
 	const socket = useContext(SocketContext);
 	const { getToken } = useAuth();
@@ -54,7 +52,7 @@ export default function Options({
 			});
 			const token = await getToken();
 			const { data } = await axios.delete(
-				`${process.env.NEXT_PUBLIC_WORKER_URL}/message/${id}`,
+				`${process.env.NEXT_PUBLIC_CHAT_URL}/message/${id}`,
 				{
 					headers: { Authorization: `Bearer ${token}` },
 				}
@@ -66,31 +64,13 @@ export default function Options({
 			toast("There was an error deleting the message");
 		}
 	}
-	async function handleBanUser() {
-		try {
-			const token = await getToken();
-			const { data } = await axios.post(
-				`${process.env.NEXT_PUBLIC_WORKER_URL}/user/ban`,
-				{
-					teacher,
-					user:sender,
-				},
-				{
-					headers: { Authorization: `Bearer ${token}` },
-				}
-			);
-			toast(data.message);
-		} catch (error) {
-			toast("There was an error banning the user");
-		}
-	}
 
 	function handelReply(){
 		dispatch({type:"SELECT_MESSAGE",payload:{reactions:[],sender,name,id,type,content,profile,createdAt,tier}})
 	}
 	return (
 		<>
-			{(isOwner || isAdminOrTeacher) && (
+			{isOwner&& (
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button
@@ -102,11 +82,6 @@ export default function Options({
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent>
-						{isAdminOrTeacher && !isOwner && (
-							<DropdownMenuItem onClick={handleBanUser}>
-								<Ban className="mr-2 h-4 w-4" /> Ban user
-							</DropdownMenuItem>
-						)}
 						{type == "text" && isOwner && (
 							<DropdownMenuItem
 								onClick={() => setIsEditing(true)}

@@ -39,7 +39,7 @@ export default function CommunityCard({
             if(isFree){
                 const token = await getToken();
                 const {data} = await axios.post(
-                    `${process.env.NEXT_PUBLIC_WORKER_URL}/server/addMember`,
+                    `${process.env.NEXT_PUBLIC_CHAT_URL}/server/addMember`,
                     {
                         serverId:id,
                         member:user.user?.id,

@@ -9,12 +9,11 @@ export default async function Page() {
 	const token = await getToken();
 
 	const {data} = await axios.get(
-		`${process.env.NEXT_PUBLIC_WORKER_URL}/server/${teacher}`,
+		`${process.env.NEXT_PUBLIC_CHAT_URL}/server/${teacher}`,
 		{
 			headers: { Authorization: `Bearer ${token}` },
 		}
 	);
-	console.log({data})
 	
 	return (
 		<main className="my-24 px-4">

@@ -28,9 +28,6 @@ type ServerType = {
 };
 
 export default function MobileSidebar({ data }: { data: ServerType[] }) {
-	const {user} = useUser();
-	const {teacher} = useParams();
-	const isTeacher = user?.id==teacher;
 	return (
 		<Sheet>
 			<div className="sm:hidden flex items-center justify-between p-4 shadow-md bg-primary dark:bg-[#2b2d31] border-b border-[#1e1f22]">
@@ -66,7 +63,7 @@ export default function MobileSidebar({ data }: { data: ServerType[] }) {
 										return (
 											<Link
 												key={chat.id}
-												href={`/${teacher}/${chat.id}`}
+												href={`/communities/${chat.id}`}
 												className="flex items-center gap-1.5 px-2 py-1.5 mx-2 rounded hover:bg-[#35373c] hover:text-[#dbdee1] cursor-pointer text-[#949ba4] group"
 											>
 												<Hash className="h-4 w-4 shrink-0 text-[#80848e] group-hover:text-[#dbdee1]" />

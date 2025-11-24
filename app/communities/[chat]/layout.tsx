@@ -21,7 +21,7 @@ export default async function layout({
   }
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_WORKER_URL}/server/${teacher}`,
+    `${process.env.NEXT_PUBLIC_CHAT_URL}/server/${teacher}`,
     {
       headers: { Authorization: `Bearer ${token}` },
     }
@@ -32,7 +32,7 @@ export default async function layout({
     <AdminContextProvider>
       <MessageContextProvider>
       <SocketProvider>
-        <main className="grid grid-cols-1 md:grid-cols-[240px_1fr] max-h-screen">
+        <main className="grid grid-cols-1 md:grid-cols-[240px_1fr] h-[calc(100vh-3.5rem)] mt-14">
           <Sidebar  data={data.data?data.data:[]} />
           <MobileSidebar data={data.data?data.data:[]} />
           {children}

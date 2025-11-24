@@ -1,7 +1,6 @@
 "use client"
 import { useAuth, useUser } from '@clerk/nextjs';
 import axios from 'axios';
-import { useParams } from 'next/navigation';
 import { 
     createContext, 
     Dispatch, 
@@ -28,14 +27,14 @@ export default function AdminContextProvider({children}: {children: ReactNode}){
     useEffect(()=>{
         getToken().then((token)=>{
             axios.get(
-                `${process.env.NEXT_PUBLIC_WORKER_URL}/public/user/banned/teacher/${teacher}`,
+                `${process.env.NEXT_PUBLIC_CHAT_URL}/public/user/banned/teacher/${teacher}`,
                 {headers:{ Authorization: `Bearer ${token}` }}
             ).then(({data})=>{
                 const bannedUsers = (data.data?data.data:[]).map((user:{userId:string})=>user.userId);
                 setBannedMembers(bannedUsers);
             });
             axios.get(
-                `${process.env.NEXT_PUBLIC_WORKER_URL}/public/user/admin/teacher/${teacher}`,
+                `${process.env.NEXT_PUBLIC_CHAT_URL}/public/user/admin/teacher/${teacher}`,
                 {headers:{ Authorization: `Bearer ${token}` }}
             ).then(({data})=>{
                 const adminUsers = (data.data?data.data:[]).map((user:{id:string})=>user.id);

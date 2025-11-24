@@ -17,7 +17,7 @@ export default function Page() {
 			try {
 				const token = await getToken();
 				const { data } = await axios.get(
-					`${process.env.NEXT_PUBLIC_WORKER_URL}/server/${teacher}?user=${user?.id}`,
+					`${process.env.NEXT_PUBLIC_CHAT_URL}/server/${teacher}?user=${user?.id}`,
 					{
 						headers: { Authorization: `Bearer ${token}` },
 					}
