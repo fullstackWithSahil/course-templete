@@ -1,6 +1,7 @@
 "use client"
 import { useAuth, useUser } from '@clerk/nextjs';
 import axios from 'axios';
+import { useParams } from 'next/navigation';
 import { 
     createContext, 
     Dispatch, 
@@ -22,7 +23,7 @@ export default function AdminContextProvider({children}: {children: ReactNode}){
     const [admins, setAdmins] = useState<string[]>([]);
     const [bannedMembers, setBannedMembers] = useState<string[]>([]);
     const {user} = useUser();
-    const teacher = process.env.NEXT_PUBLIC_TEACHER;
+    const teacher = process.env.NEXT_PUBLIC_TEACHER!;
     const {getToken} = useAuth();
     useEffect(()=>{
         getToken().then((token)=>{
@@ -30,19 +31,19 @@ export default function AdminContextProvider({children}: {children: ReactNode}){
                 `${process.env.NEXT_PUBLIC_WORKER_URL}/public/user/banned/teacher/${teacher}`,
                 {headers:{ Authorization: `Bearer ${token}` }}
             ).then(({data})=>{
-                const bannedUsers = data.data.map((user:{userId:string})=>user.userId);
+                const bannedUsers = (data.data?data.data:[]).map((user:{userId:string})=>user.userId);
                 setBannedMembers(bannedUsers);
             });
             axios.get(
                 `${process.env.NEXT_PUBLIC_WORKER_URL}/public/user/admin/teacher/${teacher}`,
                 {headers:{ Authorization: `Bearer ${token}` }}
             ).then(({data})=>{
-                const adminUsers = data.data.map((user:{id:string})=>user.id);
+                const adminUsers = (data.data?data.data:[]).map((user:{id:string})=>user.id);
                 setAdmins(adminUsers);
             });
         })
     },[teacher,getToken,user?.id]);
-    const value ={admins,setAdmins,setBannedMembers, bannedMembers}
+    const value ={admins,setAdmins,setBannedMembers, bannedMembers }
     return (
         <AdminContext.Provider value={value}>
             {children}

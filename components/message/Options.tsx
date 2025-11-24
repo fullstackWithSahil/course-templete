@@ -1,5 +1,5 @@
 "use client";
-import { MoreVertical, Edit, Trash, Download, Ban } from "lucide-react";
+import { MoreVertical, Edit, Trash, Download, Ban, ReplyIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import {
 	DropdownMenu,
@@ -12,7 +12,9 @@ import { toast } from "sonner";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { useContext } from "react";
-import { SocketContext } from "@/app/communities/[chat]/Socketprovider";
+import { useAdminContext } from "@/app/communities/components/AdminContext";
+import { SocketContext } from "@/app/communities/components/Socketprovider";
+import { useMessages } from "@/app/communities/components/MessageProvider";
 
 export default function Options({
 	sender,
@@ -20,19 +22,30 @@ export default function Options({
 	type,
 	content,
 	setIsEditing,
+	profile,
+	name,
+	tier,
+	createdAt
 }: {
-	sender: string;
-	id: number;
-	type: string;
+	id: string;
+	sender: string; // Clerk user ID
+	name: string; // Display name of the sender
+	profile: string; // URL or initials
 	content: string;
+	createdAt: string;
+	type:"text" | "image" | "file"
 	setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+	tier:"basic"|"vip"|"premium"
 }) {
+    const {admins} = useAdminContext();
 	const { user } = useUser();
-  	const teacher = process.env.NEXT_PUBLIC_TEACHER!;
-	const isOwner = (user?.id === sender)
+	const { teacher } = useParams();
+	const isOwner = (user?.id === sender)||(admins.includes(user?.id||""));
+	const isAdminOrTeacher = user?.id === teacher;
 	const { chat } = useParams();
 	const socket = useContext(SocketContext);
 	const { getToken } = useAuth();
+	const {dispatch} = useMessages();
 	async function handelDelete() {
 		try {
 			socket?.emit("deleteMessage", {
@@ -53,10 +66,31 @@ export default function Options({
 			toast("There was an error deleting the message");
 		}
 	}
-	
+	async function handleBanUser() {
+		try {
+			const token = await getToken();
+			const { data } = await axios.post(
+				`${process.env.NEXT_PUBLIC_WORKER_URL}/user/ban`,
+				{
+					teacher,
+					user:sender,
+				},
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				}
+			);
+			toast(data.message);
+		} catch (error) {
+			toast("There was an error banning the user");
+		}
+	}
+
+	function handelReply(){
+		dispatch({type:"SELECT_MESSAGE",payload:{reactions:[],sender,name,id,type,content,profile,createdAt,tier}})
+	}
 	return (
 		<>
-			{(isOwner) && (
+			{(isOwner || isAdminOrTeacher) && (
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button
@@ -68,6 +102,11 @@ export default function Options({
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent>
+						{isAdminOrTeacher && !isOwner && (
+							<DropdownMenuItem onClick={handleBanUser}>
+								<Ban className="mr-2 h-4 w-4" /> Ban user
+							</DropdownMenuItem>
+						)}
 						{type == "text" && isOwner && (
 							<DropdownMenuItem
 								onClick={() => setIsEditing(true)}
@@ -87,6 +126,9 @@ export default function Options({
 							onClick={handelDelete} // hook into backend
 						>
 							<Trash className="mr-2 h-4 w-4" /> Delete
+						</DropdownMenuItem>
+						<DropdownMenuItem onClick={handelReply}>
+							<ReplyIcon/> Reply
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>

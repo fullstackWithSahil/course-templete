@@ -1,19 +1,20 @@
 import { auth } from "@clerk/nextjs/server";
 import CommunityCard from "./CommunitiesCard";
 import logo from "@/assets/logo.png"
+import axios from "axios";
 
 export default async function Page() {
 	const teacher = process.env.NEXT_PUBLIC_TEACHER;
 	const { getToken } = await auth();
 	const token = await getToken();
 
-	const res = await fetch(
+	const {data} = await axios.get(
 		`${process.env.NEXT_PUBLIC_WORKER_URL}/server/${teacher}`,
 		{
-		headers: { Authorization: `Bearer ${token}` },
+			headers: { Authorization: `Bearer ${token}` },
 		}
 	);
-	const data = await res.json();
+	console.log({data})
 	
 	return (
 		<main className="my-24 px-4">

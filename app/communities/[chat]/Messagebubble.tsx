@@ -1,34 +1,54 @@
 "use client";
 
-import Message, { MessageProps } from "@/components/message/Message";
+import Message, { MessageType } from "@/components/message/Message";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { Socket } from "socket.io-client";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
+import { useMessages } from "../components/MessageProvider";
 
 export default function Messagebubble({socket}:{socket:Socket}){
-	const [messages, setMessages] = useState<MessageProps[] | undefined>(
-		undefined
-	);
-  	const teacher = process.env.NEXT_PUBLIC_TEACHER!;
-    const {chat} = useParams();
+	const {state,dispatch} = useMessages();
+    const {chat,teacher} = useParams();
 	const [page, setPage] = useState(1);
+	const {user} = useUser();
 	const [isLoading, setIsLoading] = useState(false);
 	const [hasMore, setHasMore] = useState(true);
 
-	const viewref = useRef<HTMLDivElement>(null); // Ref for the bottom-most element
-	const containerRef = useRef<HTMLDivElement>(null); // Ref for the scroll container
-	const prevScrollHeightRef = useRef(0); // To maintain scroll position when loading older messages
+	const viewref = useRef<HTMLDivElement>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
+	const isInitialLoadRef = useRef(true);
+	const scrollLockRef = useRef(false); // Prevent scroll during updates
 
 	const { getToken } = useAuth();
+
+	// Helper function to scroll to bottom (iOS-friendly)
+	const scrollToBottom = (behavior: 'auto' | 'smooth' = 'auto') => {
+		if (!containerRef.current) return;
+		
+		// Use requestAnimationFrame for better iOS compatibility
+		requestAnimationFrame(() => {
+			if (!containerRef.current) return;
+			const scrollHeight = containerRef.current.scrollHeight;
+			const height = containerRef.current.clientHeight;
+			const maxScroll = scrollHeight - height;
+			
+			containerRef.current.scrollTo({
+				top: maxScroll > 0 ? maxScroll : scrollHeight,
+				behavior: behavior
+			});
+		});
+	};
+
 	// 1. Initial Load (Page 1) and Cleanup
 	useEffect(() => {
 		let isMounted = true;
-		setMessages(undefined);
+		dispatch({type:"CLEAR_MESSAGE"})
 		setPage(1);
 		setHasMore(true);
 		setIsLoading(true);
+		isInitialLoadRef.current = true;
 		socket?.emit("joinRoom", {chat,teacher});
 
 		getToken().then((token)=>{
@@ -39,13 +59,19 @@ export default function Messagebubble({socket}:{socket:Socket}){
 				)
 				.then(({ data }) => {
 					if (!isMounted) return;
-					const initialMessages = data.data.reverse();
-					setMessages(initialMessages);
+					const initialMessages = (data.data?data.data:[]).reverse();
+					dispatch({type:"ADD_INITIAL_MESSAGE",payload:initialMessages});
 					setIsLoading(false);
 	
 					if (initialMessages.length < 10) {
 						setHasMore(false);
 					}
+
+					// Scroll to bottom after initial load with delay for iOS
+					setTimeout(() => {
+						scrollToBottom('auto');
+						isInitialLoadRef.current = false;
+					}, 100);
 				})
 				.catch((error) => {
 					if (!isMounted) return;
@@ -54,64 +80,76 @@ export default function Messagebubble({socket}:{socket:Socket}){
 				});
 		})
 
-		function handleReceiveMessage(message: MessageProps) {
-			setMessages((prev) => [...(prev ?? []), message]);
-			setTimeout(() => {
-				containerRef.current?.scrollBy({
-					top: 300,
-					behavior: "smooth",
-				});
-			}, 10);
+		function handleReceiveMessage(message: MessageType) {
+			if(user?.id && message.sender != user.id){
+				dispatch({type:"ADD_MESSAGE",payload:message})
+				
+				// Check if user is near bottom before auto-scrolling
+				setTimeout(() => {
+					if (!containerRef.current) return;
+					const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
+					const isNearBottom = scrollHeight - scrollTop - clientHeight < 150;
+					
+					if (isNearBottom) {
+						scrollToBottom('smooth');
+					}
+				}, 50);
+			}
 		}
 
-		function handleEditMessage(message: MessageProps) {
-            console.log("✅ Frontend received edit:", message);
+		function handleEditMessage(message: MessageType) {
             if (!isMounted) return;
-            setMessages((prev) => {
-                if (!prev) return prev;
-                return prev.map((msg) => 
-                    msg.id === message.id 
-                        ? { ...msg, content: message.content, edited: true } 
-                        : msg
-                );
-            });
+            if(state.messages.length==0) return;
+			console.log("edit",{message})
+			dispatch({type:"EDIT_MESSAGE",payload:message})
         }
-
+		
         function handleDeleteMessage(id: string) {
-            if (!isMounted) return;
-            setMessages((prev) => {
-                if (!prev) return prev;
-                return prev.filter((msg) => msg.id !== id);
-            });
+			if (!isMounted) return;
+			console.log("delete",{id})
+			if(state.messages.length==0) return;
+            dispatch({type:"DELETE_MESSAGE",payload:id})
         }
+		
+		function handleReaction(reaction:{emoji:string;user:string;messageId:string}){
+			if (!isMounted) return;
+			dispatch({type:"HANDLE_REACTION",payload:{
+				emoji:reaction.emoji,
+				messageId:reaction.messageId,
+				user:reaction.user
+			}})
+		}
 
 		socket?.on("receiveMessage", handleReceiveMessage);
 		socket?.on("receiveEditMessage", handleEditMessage);
+		socket?.on("sendReaction", handleReaction);
 		socket?.on("receiveDeleteMessage", handleDeleteMessage);
-
+		
 		return () => {
 			isMounted = false;
 			socket?.off("receiveMessage", handleReceiveMessage);
 			socket?.off("receiveEditMessage", handleEditMessage);
 			socket?.off("receiveDeleteMessage", handleDeleteMessage);
             socket?.emit("leaveRoom", chat);
+			socket?.off("sendReaction", handleReaction);
 		};
 	}, [chat]);
 
-	// 2. Load More Messages (Page 2, 3, ...) and Cleanup
+	// 2. Load More Messages (Page 2, 3, ...)
 	useEffect(() => {
-		// We only load more if page > 1 (subsequent pages)
 		if (page === 1) return;
-		if (!hasMore) return; // Stop if there are no more messages
+		if (!hasMore) return;
 
 		let isMounted = true;
+		scrollLockRef.current = true;
 
 		setIsLoading(true);
 		const container = containerRef.current;
 		const prevScrollHeight = container?.scrollHeight || 0;
+		const prevScrollTop = container?.scrollTop || 0;
 
-		// Fetch the next page number
 		getToken().then((token)=>{
+			console.log(`${process.env.NEXT_PUBLIC_WORKER_URL}/message/${chat}?page=${page}&limit=10`)
 			axios
 				.get(
 					`${process.env.NEXT_PUBLIC_WORKER_URL}/message/${chat}?page=${page}&limit=10`,
@@ -120,29 +158,31 @@ export default function Messagebubble({socket}:{socket:Socket}){
 				.then(({ data }) => {
 					if (!isMounted) return;
 	
-					const newMessages = data.data.reverse();
+					const newMessages = (data.data?data.data:[]).reverse();
 					if (newMessages.length === 0) {
 						setHasMore(false);
 					} else {
-						// Prepend older messages to the top of the list
-						setMessages((prev) => [...newMessages, ...(prev ?? [])]);
-					}
-					if (container) {
-						const newScrollHeight = container?.scrollHeight;
-						const scrollDiff = newScrollHeight - prevScrollHeight;
-						if (containerRef.current) {
-							containerRef.current.scrollTop = scrollDiff;
-						}
+						dispatch({type:"PREPEND_MESSAGES",payload:newMessages})
+						
+						// Maintain scroll position after prepending (iOS-friendly)
+						requestAnimationFrame(() => {
+							if (!container) return;
+							const newScrollHeight = container.scrollHeight;
+							const scrollDiff = newScrollHeight - prevScrollHeight;
+							container.scrollTop = prevScrollTop + scrollDiff;
+							
+							setTimeout(() => {
+								scrollLockRef.current = false;
+							}, 100);
+						});
 					}
 					setIsLoading(false);
 				})
 				.catch((error) => {
 					if (!isMounted) return;
-					console.error(
-						`Load more messages (page ${page}) failed:`,
-						error
-					);
+					console.error(`Load more messages (page ${page}) failed:`, error);
 					setIsLoading(false);
+					scrollLockRef.current = false;
 				});
 		})
 
@@ -151,85 +191,47 @@ export default function Messagebubble({socket}:{socket:Socket}){
 		};
 	}, [page, chat, hasMore]);
 
-	// 3. Maintain scroll position after loading older messages
-	useEffect(() => {
-		// Only run this logic when older messages have been loaded (page > 1)
-		if (
-			page > 1 &&
-			containerRef.current &&
-			prevScrollHeightRef.current > 0
-		) {
-			const container = containerRef.current;
-			const newScrollHeight = container.scrollHeight;
-
-			// Calculate the difference in height (the size of the newly loaded messages)
-			const scrollDiff = newScrollHeight - prevScrollHeightRef.current;
-
-			// Adjust scrollTop to keep the visible messages in the same place
-			container.scrollTop = scrollDiff;
-
-			// Reset the ref after successful application
-			prevScrollHeightRef.current = 0;
-		}
-	}, [messages, page]); // Dependency on messages ensures it runs after DOM updates
-
-	// 4. Scroll to bottom instantly on *initial* load (only when messages are available)
-	useEffect(() => {
-		if (page === 1 && messages && messages.length > 0) {
-			// A slight delay to ensure the browser has rendered the content
-			const timeoutId = setTimeout(() => {
-				if (containerRef.current) {
-					containerRef.current.scrollTop =
-						containerRef.current.scrollHeight;
-				}
-			}, 10);
-
-			return () => clearTimeout(timeoutId);
-		}
-	}, [messages, page]);
-
-	// 5. Scroll listener for infinite scrolling (debounced)
+	// 3. Scroll listener for infinite scrolling (iOS-optimized)
 	useEffect(() => {
 		let timeoutId: NodeJS.Timeout;
 		const container = containerRef.current;
 
 		function scroller() {
-			if (!container || isLoading || !hasMore) return;
+			if (!container || isLoading || !hasMore || scrollLockRef.current) return;
 
 			const scrollTop = container.scrollTop;
-			const threshold = 50; // Load when scroll is within 50px of the top
+			const threshold = 100; // Increased threshold for iOS
 
 			if (scrollTop < threshold) {
 				clearTimeout(timeoutId);
 				timeoutId = setTimeout(() => {
-					// Only increment page if not currently loading
-					if (!isLoading) {
+					if (!isLoading && !scrollLockRef.current) {
 						setPage((prev) => prev + 1);
 					}
-				}, 150); // Debounce time
+				}, 200); // Longer debounce for iOS
 			}
 		}
 
-		container?.addEventListener("scroll", scroller);
+		// Use passive listener for better iOS performance
+		container?.addEventListener("scroll", scroller, { passive: true });
 
 		return () => {
 			container?.removeEventListener("scroll", scroller);
 			clearTimeout(timeoutId);
 		};
-	}, [isLoading, hasMore]); // Dependencies ensure the listener uses the latest state
+	}, [isLoading, hasMore]);
 
 	return (
 		<div
 			ref={containerRef}
-			className="row-span-10 md:row-span-9 overflow-y-auto"
-			// Use 'auto' scrollBehavior for quick jump on load,
-			// and let the CSS class handle scrolling (if needed)
+			className={`${state.selectedMessage?"md:row-span-8 row-span-7":"md:row-span-9 row-span-8"} overflow-y-auto`}
 			style={{
-				scrollBehavior: "auto",
-				overscrollBehavior: "contain",
+				WebkitOverflowScrolling: 'touch', // Critical for iOS momentum scrolling
+				overflowY: 'auto',
+				position: 'relative',
+				// Removed overscrollBehavior as it's not well supported on iOS
 			}}
 		>
-			{/* Show loading indicator only for subsequent page loads */}
 			{isLoading && page > 1 && (
 				<div className="flex justify-center py-2">
 					<div className="text-sm text-gray-500">
@@ -238,8 +240,7 @@ export default function Messagebubble({socket}:{socket:Socket}){
 				</div>
 			)}
 
-			{/* Show 'no more messages' only when appropriate */}
-			{!hasMore && messages && messages.length > 0 && (
+			{!hasMore && state.messages && state.messages.length > 0 && (
 				<div className="flex justify-center py-2">
 					<div className="text-sm text-gray-400">
 						No more messages
@@ -247,10 +248,9 @@ export default function Messagebubble({socket}:{socket:Socket}){
 				</div>
 			)}
 
-			{messages?.map((message) => {
+			{state.messages?.map((message) => {
 				return (
 					<Message
-						// Use a stable unique ID for the key
 						key={message.id}
 						sender={message.sender}
 						profile={message.profile}
@@ -259,12 +259,12 @@ export default function Messagebubble({socket}:{socket:Socket}){
 						id={message.id}
 						name={message.name}
 						type={message.type}
+						replyTo={message.replyTo}
+						reactions={message.reactions}
+						tier={message.tier}
 					/>
 				);
 			})}
-			{/* Ref for the bottom is no longer strictly needed for scroll-to-bottom
-                since we use containerRef.current.scrollTop = containerRef.current.scrollHeight,
-                but keeping it won't hurt. */}
 			<div ref={viewref}></div>
 		</div>
 	);

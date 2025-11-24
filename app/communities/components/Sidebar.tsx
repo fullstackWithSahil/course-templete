@@ -1,3 +1,4 @@
+import Modetoggle from "@/components/Modetoggle";
 import {
 	Accordion,
 	AccordionContent,
@@ -22,13 +23,21 @@ type ServerType = {
 	chats: ChatType[];
 };
 
-export default function Sidebar({ data }: { data: ServerType[] }) {
+export default async function Sidebar({ data }: { data: ServerType[] }) {
 	return (
-		<section className="hidden md:flex md:col-span-1 w-full bg-primary dark:bg-[#2b2d31] flex-col dark:text-[#949ba4]">
+		<section className="hidden md:flex md:col-span-1 w-full bg-primary dark:bg-[#2b2d31] h-screen flex-col dark:text-[#949ba4]">
+			<div className="p-4 shadow-md bg-primary dark:bg-[#2b2d31] border-b border-[#1e1f22] flex items-center justify-around">
+				<h1 className="text-white font-semibold text-base">Servers</h1>
+				<Modetoggle/>
+				<SignedIn>
+					<UserButton/>
+				</SignedIn>
+			</div>
+
 			<div className="flex-1 overflow-y-auto">
 				<Accordion
 					type="multiple"
-					className="w-full"
+					className="w-full overflow-y-scroll"
 					defaultValue={data.map((s) => s.name)}
 				>
 					{data.map((server: ServerType) => {
@@ -39,7 +48,7 @@ export default function Sidebar({ data }: { data: ServerType[] }) {
 								className="border-none"
 							>
 								<AccordionTrigger className="dark:hover:bg-[#35373c] px-2 py-1.5 rounded-none hover:no-underline text-xs font-semibold uppercase tracking-wide text-white dark:text-[#949ba4] hover:text-[#dbdee1] [&[data-state=open]>svg]:rotate-0">
-									<span className="flex-1 text-left text-lg font-bold">
+									<span className="flex-1 text-left">
 										{server.name}
 									</span>
 								</AccordionTrigger>

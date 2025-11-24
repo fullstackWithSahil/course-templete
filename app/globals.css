@@ -119,3 +119,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+::-webkit-scrollbar {
+  width: 2px; /* Adjust the width as desired */
+}

@@ -6,8 +6,12 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ChevronDown, Hash } from "lucide-react";
+import { ChevronDown, Hash, Settings } from "lucide-react";
 import Link from "next/link";
+import Modetoggle from "@/components/Modetoggle";
+import { useUser } from "@clerk/nextjs";
+import { useParams } from "next/navigation";
+import { buttonVariants } from "@/components/ui/button";
 
 type ChatType = {
 	id: number;
@@ -24,12 +28,16 @@ type ServerType = {
 };
 
 export default function MobileSidebar({ data }: { data: ServerType[] }) {
+	const {user} = useUser();
+	const {teacher} = useParams();
+	const isTeacher = user?.id==teacher;
 	return (
 		<Sheet>
 			<div className="sm:hidden flex items-center justify-between p-4 shadow-md bg-primary dark:bg-[#2b2d31] border-b border-[#1e1f22]">
 				<SheetTrigger className="text-white font-semibold text-base">
 					Servers
 				</SheetTrigger>
+				<Modetoggle/>
 			</div>
 			<SheetContent side="left" className="pt-10">
                 <SheetTitle className="text-white font-semibold text-base">
@@ -54,11 +62,11 @@ export default function MobileSidebar({ data }: { data: ServerType[] }) {
 									<ChevronDown className="h-3 w-3 shrink-0 transition-transform duration-200 -rotate-90" />
 								</AccordionTrigger>
 								<AccordionContent className="pb-0 pt-1">
-									{server.chats.map((chat) => {
+									{(server.chats?server.chats:[]).map((chat) => {
 										return (
 											<Link
 												key={chat.id}
-												href={`/communities/${chat.id}`}
+												href={`/${teacher}/${chat.id}`}
 												className="flex items-center gap-1.5 px-2 py-1.5 mx-2 rounded hover:bg-[#35373c] hover:text-[#dbdee1] cursor-pointer text-[#949ba4] group"
 											>
 												<Hash className="h-4 w-4 shrink-0 text-[#80848e] group-hover:text-[#dbdee1]" />

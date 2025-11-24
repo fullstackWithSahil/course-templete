@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { v4 as uuidv4 } from 'uuid';
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
 	DropdownMenu,
@@ -12,12 +13,14 @@ import { File, ImageIcon, Plus } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { useMessages } from "@/app/communities/components/MessageProvider";
 
 
 const Icons = [
 	{ type: "image", icon: ImageIcon },
 	{ type: "file", icon: File },
 ] as const;
+
 export default function FileUploder() {
     const [type, setType] = useState<"image" | "file">("image");
 	const [open, setOpen] = useState(false);
@@ -27,6 +30,7 @@ export default function FileUploder() {
     const fileRef = useRef<HTMLInputElement>(null);
     const {chat} = useParams();
 	const {getToken} = useAuth();
+	const {state} = useMessages()
 
     async function handleUpload(file: File) {
 		if (!file || !user?.id) return;
@@ -36,21 +40,32 @@ export default function FileUploder() {
             const formdata = new FormData();
             formdata.append("file", file); // Add the actual file
 			const token = await getToken();
-            const {data}=await axios.post("https://chat.fullstackwithsahil.workers.dev/file",formdata,{
+            const {data}=await axios.post(`${process.env.NEXT_PUBLIC_WORKER_URL}/file`,formdata,{
 				headers: { Authorization: `Bearer ${token}` },
 			})
-            
-            const {data:message} =await axios.post("https://chat.fullstackwithsahil.workers.dev/message",{
+			if(!data.success){
+				toast(data.message||"Upload failed");
+				setOpen(false);
+				return;
+			}
+			const id = uuidv4();
+            const {data:message} =await axios.post(`${process.env.NEXT_PUBLIC_WORKER_URL}/message`,{
+				id,
                 message:data.data,
                 type,
                 sender:user.id,
                 chatId:chat,
                 profile:user.imageUrl,
-                name:user.firstName
+                name:user.firstName,
+				replyTo:state.selectedMessage?state.selectedMessage.id:null,
             },{
 				headers: { Authorization: `Bearer ${token}` },
 			})
-            console.log({message});
+			if(!message.success){
+				toast(data.message||"Upload failed");
+				setOpen(false);
+				return;
+			}
 			toast.success("File uploaded!");
 			setOpen(false);
 		} catch (err) {
