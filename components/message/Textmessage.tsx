@@ -9,28 +9,37 @@ import { SocketContext } from "@/app/communities/components/Socketprovider";
 export default function Textmessage({
 	content,
 	id,
-    setIsEditing,
-    isEditing
+	setIsEditing,
+	isEditing,
 }: {
 	content: string;
 	id: string;
-    isEditing:boolean;
-    setIsEditing:Dispatch<React.SetStateAction<boolean>>;
+	isEditing: boolean;
+	setIsEditing: Dispatch<React.SetStateAction<boolean>>;
 }) {
 	const [loading, setLoading] = useState(false);
 	const [editValue, setEditValue] = useState(content);
 	const socket = useContext(SocketContext);
-	const {chat} = useParams();
-	const {getToken} = useAuth();
+	const { chat } = useParams();
+	const { getToken } = useAuth();
 	async function handelEdit() {
 		try {
 			setLoading(true);
-			socket?.emit("editMessage", {id,content:editValue,chatId:chat});
+			socket?.emit("editMessage", {
+				id,
+				content: editValue,
+				chatId: chat,
+			});
 			const token = await getToken();
 			await axios.patch(
 				`${process.env.NEXT_PUBLIC_CHAT_URL}/message`,
 				{ messageId: id, content: editValue },
-				{ headers: { Authorization: `Bearer ${token}` }}
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+						tenent: process.env.NEXT_PUBLIC_TEACHER!,
+					},
+				}
 			);
 		} catch (error) {
 			toast("There was an error editing the message");

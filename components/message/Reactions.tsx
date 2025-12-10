@@ -29,7 +29,12 @@ export default function Reactions({reactions,messageId}:{
                     emoji
                 },
                 user:userId
-            },{headers:{ Authorization: `Bearer ${token}`}})
+            },{
+                headers: { 
+                    Authorization: `Bearer ${token}`,
+                    tenent:process.env.NEXT_PUBLIC_TEACHER! 
+                },
+            })
         } catch (error) {
             toast("There was an error reacting to this message");
         }

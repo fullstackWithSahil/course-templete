@@ -61,8 +61,11 @@ export default function SendMessage() {
 			
 			const token = await getToken();
 			await axios.post(`${process.env.NEXT_PUBLIC_CHAT_URL}/message`, newMessage, {
-				headers: { Authorization: `Bearer ${token}` },
-			});
+                headers: { 
+                    Authorization: `Bearer ${token}`,
+                    tenent: process.env.NEXT_PUBLIC_TEACHER
+                },
+            });
 			
 			
 			setMessage("");

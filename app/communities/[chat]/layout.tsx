@@ -23,9 +23,13 @@ export default async function layout({
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_CHAT_URL}/server/${teacher}`,
     {
-      headers: { Authorization: `Bearer ${token}` },
+        headers: { 
+            Authorization: `Bearer ${token}`,
+            tenent:process.env.NEXT_PUBLIC_TEACHER! 
+        },
     }
   );
+  
   const data = await res.json();
 
   return (

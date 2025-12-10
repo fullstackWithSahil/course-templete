@@ -6,12 +6,9 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ChevronDown, Hash, Settings } from "lucide-react";
+import { ChevronDown, Hash } from "lucide-react";
 import Link from "next/link";
 import Modetoggle from "@/components/Modetoggle";
-import { useUser } from "@clerk/nextjs";
-import { useParams } from "next/navigation";
-import { buttonVariants } from "@/components/ui/button";
 
 type ChatType = {
 	id: number;

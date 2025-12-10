@@ -8,16 +8,21 @@ export default async function Page() {
 	const { getToken } = await auth();
 	const token = await getToken();
 
-	const {data} = await axios.get(
-		`${process.env.NEXT_PUBLIC_CHAT_URL}/server/${teacher}`,
-		{
-			headers: { Authorization: `Bearer ${token}` },
-		}
-	);
+	const { data } = await axios.get(
+        `${process.env.NEXT_PUBLIC_CHAT_URL}/server/${teacher}`,
+        {
+            headers: { 
+                Authorization: `Bearer ${token}`,
+                tenent: process.env.NEXT_PUBLIC_TEACHER
+            },
+        }
+    );
+
+    const communities = data.data||[];
 	
 	return (
 		<main className="my-24 px-4">
-			{data.data.map((community:any)=><CommunityCard 
+			{communities.map((community:any)=><CommunityCard 
 				key={community.id}
 				id={community.id}
 				title={community.name}

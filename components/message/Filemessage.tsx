@@ -1,5 +1,4 @@
 import { Download, ExternalLink, FileText } from "lucide-react";
-import React from "react";
 import { handleDownload } from "./Options";
 
 // Extract filename from URL

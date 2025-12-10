@@ -4,7 +4,7 @@ import LoadingPage from "@/components/LoadingPage";
 import { useAuth, useUser } from "@clerk/nextjs";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect} from "react";
+import { useEffect } from "react";
 
 export default function Page() {
 	const { teacher } = useParams();
@@ -19,7 +19,10 @@ export default function Page() {
 				const { data } = await axios.get(
 					`${process.env.NEXT_PUBLIC_CHAT_URL}/server/${teacher}?user=${user?.id}`,
 					{
-						headers: { Authorization: `Bearer ${token}` },
+						headers: {
+							Authorization: `Bearer ${token}`,
+							tenent: process.env.NEXT_PUBLIC_TEACHER!,
+						},
 					}
 				);
 				const firstChatId = data.data?.[0]?.chats?.[0]?.id;
@@ -38,7 +41,7 @@ export default function Page() {
 		}
 	}, [teacher, user?.id, getToken, router]);
 
-	return <LoadingPage/>
+	return <LoadingPage />;
 }
 // http://localhost:3000/user_30tsPYCM9kydqSJIwl0WSLR59Zq/2
 // http://localhost:3000/user_30tsPYCM9kydqSJIwl0WSLR59Zq/addmember/2

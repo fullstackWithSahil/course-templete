@@ -6,7 +6,7 @@ import {
 	AccordionTrigger,
 } from "@/components/ui/accordion";
 import { SignedIn, UserButton } from "@clerk/nextjs";
-import { ChevronDown, Hash } from "lucide-react";
+import { Hash } from "lucide-react";
 import Link from "next/link";
 
 type ChatType = {

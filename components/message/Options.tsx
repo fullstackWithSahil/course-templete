@@ -1,5 +1,12 @@
 "use client";
-import { MoreVertical, Edit, Trash, Download, Ban, ReplyIcon } from "lucide-react";
+import {
+	MoreVertical,
+	Edit,
+	Trash,
+	Download,
+	Ban,
+	ReplyIcon,
+} from "lucide-react";
 import { Button } from "../ui/button";
 import {
 	DropdownMenu,
@@ -12,7 +19,6 @@ import { toast } from "sonner";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { useContext } from "react";
-import { useAdminContext } from "@/app/communities/components/AdminContext";
 import { SocketContext } from "@/app/communities/components/Socketprovider";
 import { useMessages } from "@/app/communities/components/MessageProvider";
 
@@ -25,7 +31,7 @@ export default function Options({
 	profile,
 	name,
 	tier,
-	createdAt
+	createdAt,
 }: {
 	id: string;
 	sender: string; // Clerk user ID
@@ -33,17 +39,16 @@ export default function Options({
 	profile: string; // URL or initials
 	content: string;
 	createdAt: string;
-	type:"text" | "image" | "file"
+	type: "text" | "image" | "file";
 	setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
-	tier:"basic"|"vip"|"premium"
+	tier: "basic" | "vip" | "premium";
 }) {
 	const { user } = useUser();
-	const teacher = process.env.NEXT_PUBLIC_TEACHER!;
-	const isOwner = user?.id === sender
+	const isOwner = user?.id === sender;
 	const { chat } = useParams();
 	const socket = useContext(SocketContext);
 	const { getToken } = useAuth();
-	const {dispatch} = useMessages();
+	const { dispatch } = useMessages();
 	async function handelDelete() {
 		try {
 			socket?.emit("deleteMessage", {
@@ -54,7 +59,10 @@ export default function Options({
 			const { data } = await axios.delete(
 				`${process.env.NEXT_PUBLIC_CHAT_URL}/message/${id}`,
 				{
-					headers: { Authorization: `Bearer ${token}` },
+					headers: {
+						Authorization: `Bearer ${token}`,
+						tenent: process.env.NEXT_PUBLIC_TEACHER!,
+					},
 				}
 			);
 			if (!data.success) {
@@ -65,12 +73,25 @@ export default function Options({
 		}
 	}
 
-	function handelReply(){
-		dispatch({type:"SELECT_MESSAGE",payload:{reactions:[],sender,name,id,type,content,profile,createdAt,tier}})
+	function handelReply() {
+		dispatch({
+			type: "SELECT_MESSAGE",
+			payload: {
+				reactions: [],
+				sender,
+				name,
+				id,
+				type,
+				content,
+				profile,
+				createdAt,
+				tier,
+			},
+		});
 	}
 	return (
 		<>
-			{isOwner&& (
+			{isOwner && (
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button
@@ -103,7 +124,7 @@ export default function Options({
 							<Trash className="mr-2 h-4 w-4" /> Delete
 						</DropdownMenuItem>
 						<DropdownMenuItem onClick={handelReply}>
-							<ReplyIcon/> Reply
+							<ReplyIcon /> Reply
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>

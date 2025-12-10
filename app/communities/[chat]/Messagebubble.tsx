@@ -55,13 +55,19 @@ export default function Messagebubble({socket}:{socket:Socket}){
 			axios
 				.get(
 					`${process.env.NEXT_PUBLIC_CHAT_URL}/message/${chat}?page=0&limit=10`,
-					{headers:{ Authorization: `Bearer ${token}` }}
+					{
+                        headers: { 
+                            Authorization: `Bearer ${token}`,
+                            tenent: process.env.NEXT_PUBLIC_TEACHER
+                        },
+                    }
 				)
 				.then(({ data }) => {
 					if (!isMounted) return;
 					const initialMessages = (data.data?data.data:[]).reverse();
 					dispatch({type:"ADD_INITIAL_MESSAGE",payload:initialMessages});
 					setIsLoading(false);
+                    console.log({data})
 	
 					if (initialMessages.length < 10) {
 						setHasMore(false);
@@ -153,7 +159,12 @@ export default function Messagebubble({socket}:{socket:Socket}){
 			axios
 				.get(
 					`${process.env.NEXT_PUBLIC_CHAT_URL}/message/${chat}?page=${page}&limit=10`,
-					{headers:{ Authorization: `Bearer ${token}` }}
+					{
+                        headers: { 
+                            Authorization: `Bearer ${token}`,
+                            tenent: process.env.NEXT_PUBLIC_TEACHER
+                        },
+                    }
 				)
 				.then(({ data }) => {
 					if (!isMounted) return;
