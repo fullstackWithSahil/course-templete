@@ -32,6 +32,10 @@ export default function CommunityCard({
 	async function handelClick() {
 		try {
 			setLoading(true);
+            if(!user.user) {
+                toast("You need to sign in first");
+                return;
+            }
 			if (members.includes(user.user?.id || "")) {
 				router.push(`/communities/${id}`);
 				return;
@@ -43,8 +47,8 @@ export default function CommunityCard({
 					{
 						serverId: id,
 						member: user.user?.id,
-						teacher: process.env.NEXT_PUBLIC_WORKER_URL,
-						email: user.user?.primaryEmailAddress,
+						teacher: process.env.NEXT_PUBLIC_TEACHER,
+						email: user.user?.primaryEmailAddress?.emailAddress,
 						name: user.user?.fullName,
 					},
 					{
@@ -54,6 +58,8 @@ export default function CommunityCard({
 						},
 					}
 				);
+                const newId:string = data.data[0].id;
+                router.push(`/communities/${newId}`);
 			}
 		} catch (error) {
 			toast("Something went wrong");
@@ -70,7 +76,7 @@ export default function CommunityCard({
 					{/* Logo Section */}
 					<div className="flex justify-center items-center bg-gray-100 dark:bg-gray-800 p-4">
 						<img
-							src={logo}
+							src={`https://bucket.buisnesstools.in/${logo}`}
 							alt="logo"
 							className="w-full object-contain"
 						/>

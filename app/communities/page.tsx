@@ -1,6 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
 import CommunityCard from "./CommunitiesCard";
-import logo from "@/assets/logo.png"
 import axios from "axios";
 
 export default async function Page() {
@@ -9,7 +8,7 @@ export default async function Page() {
 	const token = await getToken();
 
 	const { data } = await axios.get(
-        `${process.env.NEXT_PUBLIC_CHAT_URL}/server/${teacher}`,
+        `${process.env.NEXT_PUBLIC_CHAT_URL}/public/server/${teacher}`,
         {
             headers: { 
                 Authorization: `Bearer ${token}`,
@@ -27,7 +26,7 @@ export default async function Page() {
 				id={community.id}
 				title={community.name}
 				description="this is community for the course"
-				logo={logo}
+				logo={community.thumbnail}
 				members={community.members}
 				isFree={community.isFree}
 			/>)}

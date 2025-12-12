@@ -11,9 +11,10 @@ import { useAuth, useUser } from "@clerk/nextjs";
 import axios from "axios";
 import { File, ImageIcon, Plus } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useMessages } from "@/app/communities/components/MessageProvider";
+import { SocketContext } from "@/app/communities/components/Socketprovider";
 
 
 const Icons = [
@@ -29,8 +30,9 @@ export default function FileUploder() {
     const {user} = useUser();
     const fileRef = useRef<HTMLInputElement>(null);
     const {chat} = useParams();
+    const socket = useContext(SocketContext);
 	const {getToken} = useAuth();
-	const {state} = useMessages()
+	const {state,dispatch} = useMessages()
 
     async function handleUpload(file: File) {
 		if (!file || !user?.id) return;
@@ -49,23 +51,39 @@ export default function FileUploder() {
 				return;
 			}
 			const id = uuidv4();
-            const {data:message} =await axios.post(`${process.env.NEXT_PUBLIC_CHAT_URL}/message`,{
+            const newMessage = {
 				id,
                 message:data.data,
                 type,
                 sender:user.id,
                 chatId:chat,
                 profile:user.imageUrl,
-                name:user.firstName,
+                name:user.firstName!,
 				replyTo:state.selectedMessage?state.selectedMessage.id:null,
-            },{
-				headers: { Authorization: `Bearer ${token}` },
-			})
+            }
+            const {data:message} =await axios.
+                post(`${process.env.NEXT_PUBLIC_CHAT_URL}/message`,newMessage,{
+                    headers: { Authorization: `Bearer ${token}` },
+                })
 			if(!message.success){
 				toast(data.message||"Upload failed");
 				setOpen(false);
 				return;
 			}
+            if(!socket){
+                toast.error("Socket not connected");
+            }
+            const messageToSend = {
+                ...newMessage,
+                replyTo:state.selectedMessage?state.selectedMessage:null,
+				content: newMessage.message,
+				type,
+				createdAt: String(new Date(Date.now())),
+				reactions:[],
+				tier:"basic" as const
+            }
+			socket?.emit("sendMessage",messageToSend);
+			dispatch({type:"ADD_MESSAGE",payload:messageToSend});
 			toast.success("File uploaded!");
 			setOpen(false);
 		} catch (err) {
