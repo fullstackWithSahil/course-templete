@@ -1,6 +1,7 @@
 import NoCourses from "@/components/NoCourses";
 import { supabaseClient } from "@/lib/server/Supabase";
 import Card from "./Coursecard";
+import { currentUser } from "@clerk/nextjs/server";
 
 export default async function Page() {
   const supabase = supabaseClient();
@@ -9,8 +10,6 @@ export default async function Page() {
     .from("courses")
     .select("*")
     .eq("teacher",teacher);
-  
-    console.log({data})
   
   if (!data||!data[0]){
     return <NoCourses text="The teacker has not created any courses yet"/>

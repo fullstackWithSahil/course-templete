@@ -31,6 +31,7 @@ export default async function Page({ params }: PageProps) {
   }
   const id = Number(param.id);
   const { data } = await supabase.from("videos").select("*").eq("course", id);
+  console.log({data})
 
   //formatting the videos
   const blocks: Module[] = data

@@ -6,9 +6,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Module, useVideoContext } from "./Context";
+import ViewAdder from "./ViewAdder";
 
 export default function Content({ blocks }: { blocks: Module[] }) {
-  const {setdata}=useVideoContext();
+  const {setdata,data}=useVideoContext();
   return (
     <div className="w-full lg:w-1/3">
       <Accordion type="multiple">
@@ -23,7 +24,7 @@ export default function Content({ blocks }: { blocks: Module[] }) {
               {block.videos.map((video, i) => (
                 <div 
                   key={video.id}
-                  className="flex items-center gap-2 mb-3 cursor-pointer"
+                  className="flex items-center gap-2 mb-3 cursor-pointer justify-around"
                   onClick={()=>{setdata((prev)=>({...prev,currentVideo:video}))}} 
                 >
                   <img
@@ -31,9 +32,10 @@ export default function Content({ blocks }: { blocks: Module[] }) {
                     alt={video.title}
                     className="w-1/4"
                   />
-                  <h3 className="text-xl font-medium">
+                  <h3 className="text-lg font-medium">
                     Lesson-{i+1}: {video.title}
                   </h3>
+                  <ViewAdder data={data} videoId={Number(video.id)}/>
                 </div>
               ))}
             </AccordionContent>

@@ -19,7 +19,7 @@ export default function Card({
 	const { userId } = useAuth();
 	const router = useRouter();
 	async function handelClick(){
-		if(!userId){
+        if(!userId){
 			return <RedirectToSignUp/>
 		}
 		const data = await buyCourse(userId,id);
